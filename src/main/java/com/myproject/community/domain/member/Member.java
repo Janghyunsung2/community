@@ -34,6 +34,8 @@ public class Member {
 
     private LocalDate createDate;
 
+    private LocalDate lastLoginDate;
+
     @ManyToOne(fetch = FetchType.LAZY)
     private MemberStatus memberStatus;
 
@@ -41,14 +43,18 @@ public class Member {
     private Gender gender;
 
     @Builder
-    public Member(String name, String phoneNumber, String email, String nickName, LocalDate birthday, LocalDate createDate, Gender gender) {
+    public Member(String name, String phoneNumber, String email, String nickName, LocalDate birthday,  Gender gender) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.email = email;
         this.nickName = nickName;
         this.birthday = birthday;
-        this.createDate = createDate;
+        this.createDate = LocalDate.now();
         this.gender = gender;
+    }
+
+    public void updateLastLoginDate() {
+        this.lastLoginDate = LocalDate.now();
     }
 
 
