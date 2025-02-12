@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -21,4 +22,10 @@ public class Board {
 
     private boolean active;
 
+    @Builder
+    public Board(String title, String description, boolean active) {
+        this.title = title;
+        this.description = description;
+        this.active = active;
+    }
 }

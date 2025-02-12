@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -26,4 +27,9 @@ public class CategoryBoard {
     @ManyToOne(fetch = FetchType.LAZY)
     private Board board;
 
+    @Builder
+    public CategoryBoard(Category category, Board board) {
+        this.category = category;
+        this.board = board;
+    }
 }
