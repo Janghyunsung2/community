@@ -45,7 +45,7 @@ public class Member {
     @Builder
     public Member(String name, String phoneNumber, String email, String nickName, LocalDate birthday,  Gender gender) {
         this.name = name;
-        this.phoneNumber = phoneNumber;
+        this.phoneNumber = null;
         this.email = email;
         this.nickName = nickName;
         this.birthday = birthday;

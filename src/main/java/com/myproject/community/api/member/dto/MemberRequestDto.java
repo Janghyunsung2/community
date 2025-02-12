@@ -37,4 +37,7 @@ public class MemberRequestDto {
     @NotBlank
     private LocalDate birthday;
 
+    @NotBlank
+    private String verificationCode;
+
 }
