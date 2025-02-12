@@ -39,7 +39,7 @@ class MemberServiceImplTest {
     @DisplayName("회원가입 성공")
     void registerSuccess() {
 
-        MemberRequestDto memberRequestDto = new MemberRequestDto("james", "test", "1234", "test@gmail.com", "testNick", "010-1234-1234", "MALE", LocalDate.of(1999,9, 9));
+        MemberRequestDto memberRequestDto = new MemberRequestDto("james", "test", "1234", "test@gmail.com", "testNick", "010-3106-7976", "MALE", LocalDate.now(), "1236478" );
 
         Gender mockGender = mock(Gender.class);
 

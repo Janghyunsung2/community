@@ -10,6 +10,7 @@ public enum ErrorCode {
 
     /* 400 BAD_REQUEST : 잘못된 요청 */
 
+
     /* 401 UNAUTHORIZED : 인증되지 않은 사용자 */
     PASSWORD_NOT_MATCHED(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."),
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "refresh token이 일치하지 않습니다."),
@@ -20,7 +21,9 @@ public enum ErrorCode {
     QUIT_ACCOUNT(HttpStatus.FORBIDDEN, "탈퇴한 사용자입니다."),
 
     /* 404 NOT_FOUND : Resource 를 찾을 수 없음 */
-
+    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "카테고리를 찾을 수 없습니다."),
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "맴버를 찾을 수 없음"),
+    BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "게시판을 찾을 수 없음"),
     /* 409 CONFLICT : Resource 의 현재 상태와 충돌. 보통 중복된 데이터 존재 */
 
     /* 500 INTERNAL_SERVER_ERROR : 서버오류 */

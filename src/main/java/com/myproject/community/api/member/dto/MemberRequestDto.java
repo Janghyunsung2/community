@@ -34,7 +34,6 @@ public class MemberRequestDto {
     @NotBlank
     private String gender;
 
-    @NotBlank
     private LocalDate birthday;
 
     @NotBlank
