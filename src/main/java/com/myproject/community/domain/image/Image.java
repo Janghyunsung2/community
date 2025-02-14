@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -16,5 +17,10 @@ public class Image {
     private long id;
 
     private String path;
+
+    @Builder
+    public Image(String path) {
+        this.path = path;
+    }
 
 }

@@ -5,8 +5,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChatRoom {
@@ -18,4 +21,10 @@ public class ChatRoom {
     private String title;
 
     private int capacity;
+
+    @Builder
+    public ChatRoom(String title, int capacity) {
+        this.title = title;
+        this.capacity = capacity;
+    }
 }

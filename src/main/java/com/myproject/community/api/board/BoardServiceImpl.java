@@ -8,6 +8,7 @@ import com.myproject.community.error.CustomException;
 import com.myproject.community.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,5 +33,19 @@ public class BoardServiceImpl implements BoardService {
         CategoryBoard categoryBoard = CategoryBoard.builder().board(board).category(category).build();
 
         categoryBoardRepository.save(categoryBoard);
+    }
+
+    @Transactional
+    public void updateBoard(BoardWithCategoryDto boardWithCategoryDto) {
+        Board board = boardRepository.findById(boardWithCategoryDto.getId())
+            .orElseThrow(() -> new CustomException(ErrorCode.BOARD_NOT_FOUND));
+        board.update(boardWithCategoryDto.getTitle(), boardWithCategoryDto.getDescription(), boardWithCategoryDto.isActive());
+    }
+
+    public BoardDto getBoardById(Long id) {
+        Board board = boardRepository.findById(id)
+            .orElseThrow(() -> new CustomException(ErrorCode.BOARD_NOT_FOUND));
+
+        return new BoardDto(board.getId(), board.getTitle(), board.getDescription(), board.isActive());
     }
 }

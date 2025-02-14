@@ -3,9 +3,10 @@ package com.myproject.community.api.member.service.impl;
 import com.myproject.community.api.account.AccountRepository;
 import com.myproject.community.api.auth.dto.MemberAuthDto;
 import com.myproject.community.api.auth.dto.MemberAuthDto.MemberAccount;
+import com.myproject.community.api.member.dto.MemberUpdateDto;
 import com.myproject.community.api.member.repository.GenderRepository;
 import com.myproject.community.api.member.repository.MemberRepository;
-import com.myproject.community.api.member.dto.MemberRequestDto;
+import com.myproject.community.api.member.dto.MemberCreateDto;
 import com.myproject.community.api.member.service.MemberService;
 import com.myproject.community.domain.account.Account;
 import com.myproject.community.domain.account.Role;
@@ -29,7 +30,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public void registerMember(MemberRequestDto dto) {
+    public void registerMember(MemberCreateDto dto) {
 
         Gender gender = genderRepository
             .findByName(dto.getGender()).orElse( new Gender(dto.getGender()));
@@ -80,5 +81,14 @@ public class MemberServiceImpl implements MemberService {
             throw new CustomException(ErrorCode.QUIT_ACCOUNT);
         }
         return memberId;
+    }
+
+    @Transactional
+    public void updateMember(MemberUpdateDto dto) {
+        Member member = memberRepository.findById(dto.getId())
+            .orElseThrow(() -> new CustomException(ErrorCode.QUIT_ACCOUNT));
+
+        member.updateMember(dto.getNickname(), dto.getPhone(), dto.getEmail(), dto.getBirthday());
+
     }
 }

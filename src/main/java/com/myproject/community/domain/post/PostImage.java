@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -26,4 +27,9 @@ public class PostImage {
     @ManyToOne(fetch = FetchType.LAZY)
     private Image image;
 
+    @Builder
+    public PostImage(Post post, Image image) {
+        this.post = post;
+        this.image = image;
+    }
 }

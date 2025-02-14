@@ -6,10 +6,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class Board {
 
     @Id
@@ -24,6 +26,12 @@ public class Board {
 
     @Builder
     public Board(String title, String description, boolean active) {
+        this.title = title;
+        this.description = description;
+        this.active = active;
+    }
+
+    public void update(String title, String description, boolean active) {
         this.title = title;
         this.description = description;
         this.active = active;
