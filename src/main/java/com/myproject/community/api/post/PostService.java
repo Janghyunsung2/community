@@ -1,5 +1,5 @@
 package com.myproject.community.api.post;
 
 public interface PostService {
-
+    void createPost(PostWithBoardDto postWithBoardDto);
 }

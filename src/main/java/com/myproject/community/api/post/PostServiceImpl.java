@@ -1,6 +1,7 @@
 package com.myproject.community.api.post;
 
 import com.myproject.community.api.board.BoardRepository;
+import com.myproject.community.api.image.PostImageService;
 import com.myproject.community.api.member.repository.MemberRepository;
 import com.myproject.community.domain.board.Board;
 import com.myproject.community.domain.member.Member;
@@ -18,6 +19,8 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
+    private final PostImageService postImageService;
+
 
 
     @Transactional
@@ -38,5 +41,8 @@ public class PostServiceImpl implements PostService {
             .board(board)
             .build();
         postRepository.save(post);
+
+        postImageService.savePostImages(post, postWithBoardDto.getImages());
+
     }
 }

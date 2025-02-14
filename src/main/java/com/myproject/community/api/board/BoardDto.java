@@ -1,5 +1,6 @@
 package com.myproject.community.api.board;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,9 +11,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BoardDto {
 
+
     private long id;
+    @NotBlank
     private String title;
+    @NotBlank
     private String description;
+
     private boolean active;
 
     @Builder
