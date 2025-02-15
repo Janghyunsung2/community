@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,6 +27,8 @@ public class Post {
 
     private String content;
 
+    private LocalDateTime createdAt;
+
     @ManyToOne(fetch = FetchType.LAZY)
     private Board board;
 
@@ -38,6 +41,12 @@ public class Post {
         this.content = content;
         this.board = board;
         this.member = member;
+        this.createdAt = LocalDateTime.now();
+    }
+
+    public void update(String title, String content){
+        this.title = title;
+        this.content = content;
     }
 
 }

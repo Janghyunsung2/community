@@ -1,7 +1,6 @@
 package com.myproject.community.api.chat_room;
 
 import java.util.List;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,11 +23,11 @@ public class ChatRoomController {
         return ResponseEntity.ok("Chat room created");
     }
 
-    @GetMapping
-    public ResponseEntity<List<ChatRoomResponseDto>> getAllChatRooms(){
-        List<ChatRoomResponseDto> allChatRooms = chatRoomService.getAllChatRooms();
-        return ResponseEntity.ok(allChatRooms);
-    }
+//    @GetMapping
+//    public ResponseEntity<List<ChatRoomResponseDto>> getAllChatRooms(){
+//        List<ChatRoomResponseDto> allChatRooms = chatRoomService.getAllChatRooms();
+//        return ResponseEntity.ok(allChatRooms);
+//    }
 
     @GetMapping
     public ResponseEntity<ChatRoomResponseDto> getChatRoomById(@PathVariable("id") Long id){

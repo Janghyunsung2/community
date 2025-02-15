@@ -3,12 +3,16 @@ package com.myproject.community.api.post;
 import com.myproject.community.api.board.BoardRepository;
 import com.myproject.community.api.image.PostImageService;
 import com.myproject.community.api.member.repository.MemberRepository;
+import com.myproject.community.api.post.repository.PostRepository;
 import com.myproject.community.domain.board.Board;
 import com.myproject.community.domain.member.Member;
 import com.myproject.community.domain.post.Post;
 import com.myproject.community.error.CustomException;
 import com.myproject.community.error.ErrorCode;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,4 +49,29 @@ public class PostServiceImpl implements PostService {
         postImageService.savePostImages(post, postWithBoardDto.getImages());
 
     }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Page<PostListDto> getPosts(long boardId, Pageable pageable) {
+        return postRepository.findPostsByBoardId(boardId, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public PostDetailDto getPostDetail(long postId) {
+        return postRepository.findPostById(postId);
+    }
+
+    @Transactional
+    public void updatePost(PostUpdateDto postUpdateDto) {
+        long postId = postUpdateDto.getPostId();
+        Post post = postRepository.findById(postId)
+            .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+        post.update(postUpdateDto.getTitle(), postUpdateDto.getContent());
+    }
+
+    @Transactional
+    public void deletePost(long postId) {
+        postRepository.deleteById(postId);
+    }
+
 }

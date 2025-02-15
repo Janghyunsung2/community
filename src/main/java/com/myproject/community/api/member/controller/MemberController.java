@@ -20,7 +20,7 @@ public class MemberController {
     private final MemberService memberService;
 
 
-    @PostMapping
+    @PostMapping("/register")
     public ResponseEntity<String> register(@Validated @RequestBody MemberCreateDto dto){
         memberService.registerMember(dto);
         return ResponseEntity.ok("Member registered successfully");
