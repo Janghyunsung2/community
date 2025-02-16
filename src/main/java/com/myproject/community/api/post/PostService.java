@@ -4,7 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface PostService {
-    void createPost(PostWithBoardDto postWithBoardDto);
+    void createPost(long boardId, PostWithBoardDto postWithBoardDto);
 
     Page<PostListDto> getPosts(long boardId, Pageable pageable);
 

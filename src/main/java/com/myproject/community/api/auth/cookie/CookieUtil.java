@@ -2,7 +2,10 @@ package com.myproject.community.api.auth.cookie;
 
 import com.myproject.community.api.auth.jwt.TokenInfo;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Arrays;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -57,5 +60,15 @@ public class CookieUtil {
         cookie.setPath("/");
         cookie.setMaxAge(0);  // 만료된 쿠키로 설정
         return cookie;
+    }
+
+    public Optional<String> getTokenFromCookie(HttpServletRequest request, String cookieName) {
+        if (request.getCookies() != null) {
+            return Arrays.stream(request.getCookies())
+                .filter(cookie -> cookieName.equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findFirst();
+        }
+        return Optional.empty();
     }
 }

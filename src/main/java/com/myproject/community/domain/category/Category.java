@@ -32,11 +32,12 @@ public class Category {
 
 
     @Builder
-    public Category(Long id, String name, Category parent) {
-        this.id = id;
+    public Category(String name, Category parent) {
         this.name = name;
         this.parent = parent;
     }
+
+
     private void addChild(Category category) {
         children.add(category);
         category.parent = this;

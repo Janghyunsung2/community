@@ -1,10 +1,12 @@
 package com.myproject.community.api.auth.controller;
 
+import com.myproject.community.api.auth.cookie.CookieUtil;
 import com.myproject.community.api.auth.dto.MemberLoginDto;
 import com.myproject.community.api.auth.dto.VerifyEmailDto;
 import com.myproject.community.api.auth.service.auth.AuthService;
 import com.myproject.community.api.auth.service.email.EmailService;
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,6 +25,7 @@ public class AuthController {
 
     private final AuthService authService;
     private final EmailService emailService;
+    private final CookieUtil cookieUtil;
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@Validated @RequestBody MemberLoginDto loginDto, HttpServletResponse response) {
@@ -31,6 +34,13 @@ public class AuthController {
 
         return ResponseEntity.ok().build();
     }
+
+//    @PostMapping("/check")
+//    public ResponseEntity<Void> loginCheck(HttpServletRequest request) {
+//        cookieUtil.getAccessTokenHttpSecureCookie()
+//        return ResponseEntity.ok().build();
+//    }
+
 
     @PostMapping("/send-email")
     public ResponseEntity<?> sendEmail(@RequestParam String email) throws MessagingException {
