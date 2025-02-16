@@ -16,14 +16,12 @@ public class PostWithBoardDto {
     private List<MultipartFile> images;
 
     private long authorId;
-    private long boardId;
 
     @Builder
-    public PostWithBoardDto(String title, String content, List<MultipartFile> images, long authorId, long boardId) {
+    public PostWithBoardDto(String title, String content, List<MultipartFile> images, long authorId) {
         this.title = title;
         this.content = content;
         this.authorId = authorId;
-        this.boardId = boardId;
         this.images = images;
     }
 }

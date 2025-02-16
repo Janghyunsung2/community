@@ -20,14 +20,13 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Transactional
     public void saveChildCategory(CategoryChildrenDto categoryChildrenDto){
-        CategoryDto parent = categoryChildrenDto.getParent();
+        long parentId = categoryChildrenDto.getParent().getId();
+        Category parent = categoryRepository.findById(parentId).orElse(null);
+
         Category child = Category.builder()
             .name(categoryChildrenDto.getName())
-            .parent(Category.builder()
-                .id(parent.getId())
-                .name(parent.getName())
-                .build()
-            ).build();
+            .parent(parent)
+            .build();
 
         categoryRepository.save(child);
     }

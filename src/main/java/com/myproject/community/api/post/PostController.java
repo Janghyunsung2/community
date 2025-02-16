@@ -20,7 +20,7 @@ public class PostController {
 
     @PostMapping("/api/boards/{boardId}/posts")
     public ResponseEntity<String> createPost(@PathVariable long boardId, @RequestBody PostWithBoardDto postWithBoardDto){
-        postService.createPost(postWithBoardDto);
+        postService.createPost(boardId, postWithBoardDto);
         return ResponseEntity.ok().build();
     }
 

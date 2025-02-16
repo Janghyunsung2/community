@@ -28,10 +28,10 @@ public class PostServiceImpl implements PostService {
 
 
     @Transactional
-    public void createPost(PostWithBoardDto postWithBoardDto) {
+    public void createPost(long boardId, PostWithBoardDto postWithBoardDto) {
 
         long authorId = postWithBoardDto.getAuthorId();
-        long boardId = postWithBoardDto.getBoardId();
+
 
         Member member = memberRepository.findById(authorId)
             .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
