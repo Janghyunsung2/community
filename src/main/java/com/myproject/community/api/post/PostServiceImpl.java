@@ -1,5 +1,7 @@
 package com.myproject.community.api.post;
 
+import com.myproject.community.api.auth.cookie.CookieUtil;
+import com.myproject.community.api.auth.jwt.JwtProvider;
 import com.myproject.community.api.board.BoardRepository;
 import com.myproject.community.api.image.PostImageService;
 import com.myproject.community.api.member.repository.MemberRepository;
@@ -9,12 +11,14 @@ import com.myproject.community.domain.member.Member;
 import com.myproject.community.domain.post.Post;
 import com.myproject.community.error.CustomException;
 import com.myproject.community.error.ErrorCode;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -24,16 +28,15 @@ public class PostServiceImpl implements PostService {
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
     private final PostImageService postImageService;
-
+    private final JwtProvider jwtProvider;
 
 
     @Transactional
-    public void createPost(long boardId, PostWithBoardDto postWithBoardDto) {
+    public void createPost(long boardId, PostWithBoardDto postWithBoardDto, HttpServletRequest request) {
 
-        long authorId = postWithBoardDto.getAuthorId();
+        long authUserId = jwtProvider.getAuthUserId(request);
 
-
-        Member member = memberRepository.findById(authorId)
+        Member member = memberRepository.findById(authUserId)
             .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
         Board board = boardRepository.findById(boardId)
             .orElseThrow(() -> new CustomException(ErrorCode.BOARD_NOT_FOUND));
@@ -45,8 +48,11 @@ public class PostServiceImpl implements PostService {
             .board(board)
             .build();
         postRepository.save(post);
+        List<MultipartFile> images = postWithBoardDto.getImages();
+        if(images != null && !images.isEmpty()) {
+            postImageService.savePostImages(post, postWithBoardDto.getImages());
+        }
 
-        postImageService.savePostImages(post, postWithBoardDto.getImages());
 
     }
 

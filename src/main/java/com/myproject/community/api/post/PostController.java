@@ -1,5 +1,6 @@
 package com.myproject.community.api.post;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,8 +20,8 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping("/api/boards/{boardId}/posts")
-    public ResponseEntity<String> createPost(@PathVariable long boardId, @RequestBody PostWithBoardDto postWithBoardDto){
-        postService.createPost(boardId, postWithBoardDto);
+    public ResponseEntity<String> createPost(@PathVariable long boardId, @RequestBody PostWithBoardDto postWithBoardDto, HttpServletRequest request) {
+        postService.createPost(boardId, postWithBoardDto, request);
         return ResponseEntity.ok().build();
     }
 

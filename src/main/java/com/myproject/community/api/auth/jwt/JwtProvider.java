@@ -14,6 +14,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Base64;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -117,6 +119,28 @@ public class JwtProvider {
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
+
+    public long getAuthUserId(HttpServletRequest request) {
+        // claims.getSubject() 값이 userId
+        String token = resolveTokenFromCookie(request);
+        Claims claims = parseClaims(token);
+        String userId = claims.getSubject();
+        return Long.parseLong(userId);
+    }
+
+    private String resolveTokenFromCookie(HttpServletRequest request) {
+        if (request.getCookies() != null) {
+            for (jakarta.servlet.http.Cookie cookie : request.getCookies()) {
+                if ("access-token".equals(cookie.getName())) {  // 🔹 JWT가 저장된 쿠키 이름 확인
+                    return cookie.getValue();
+                }
+            }
+        }
+        log.warn("JWT 쿠키가 존재하지 않습니다.");
+        throw new CustomException(ErrorCode.INVALID_TOKEN);
+    }
+
+
 
     private String generateAccessToken(MemberAuthDto dto){
         Claims claims = null;
