@@ -27,6 +27,8 @@ public class Post {
 
     private String content;
 
+    private boolean isDeleted;
+
     private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -40,6 +42,7 @@ public class Post {
         this.title = title;
         this.content = content;
         this.board = board;
+        this.isDeleted = false;
         this.member = member;
         this.createdAt = LocalDateTime.now();
     }
@@ -47,6 +50,10 @@ public class Post {
     public void update(String title, String content){
         this.title = title;
         this.content = content;
+    }
+
+    public void delete(){
+        this.isDeleted = true;
     }
 
 }

@@ -24,7 +24,7 @@ public class AdminInitializer implements CommandLineRunner {
     @Transactional
     public void run(String... args) throws Exception {
         if(accountRepository.findByUsername("admin").isEmpty()) {
-            Member member = Member.builder().build();
+            Member member = Member.builder().nickName("관리자").build();
             Account admin = Account.builder().username("admin")
                 .password(passwordEncoder.encode("1234")).role(Role.ADMIN).member(member).build();
             memberRepository.save(member);
