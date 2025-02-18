@@ -68,16 +68,20 @@ public class PostServiceImpl implements PostService {
     }
 
     @Transactional
-    public void updatePost(PostUpdateDto postUpdateDto) {
-        long postId = postUpdateDto.getPostId();
-        Post post = postRepository.findById(postId)
-            .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+    public void updatePost(long postId, PostUpdateDto postUpdateDto) {
+        Post post = findPostById(postId);
         post.update(postUpdateDto.getTitle(), postUpdateDto.getContent());
     }
 
     @Transactional
     public void deletePost(long postId) {
-        postRepository.deleteById(postId);
+        Post post = findPostById(postId);
+        post.delete();
+    }
+
+    private Post findPostById(long postId) {
+        return postRepository.findById(postId)
+            .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
     }
 
 }

@@ -37,7 +37,7 @@ public class PostController {
 
     @PutMapping("/api/posts/{postId}")
     public ResponseEntity<Void> updatePost(@PathVariable long postId, @RequestBody PostUpdateDto postUpdateDto){
-        postService.updatePost(postUpdateDto);
+        postService.updatePost(postId ,postUpdateDto);
         return ResponseEntity.ok().build();
     }
 

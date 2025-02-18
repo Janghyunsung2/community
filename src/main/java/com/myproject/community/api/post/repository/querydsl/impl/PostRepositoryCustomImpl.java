@@ -8,14 +8,17 @@ import com.myproject.community.api.post.repository.querydsl.PostRepositoryCustom
 import com.myproject.community.domain.board.QBoard;
 import com.myproject.community.domain.image.QImage;
 import com.myproject.community.domain.member.QMember;
+import com.myproject.community.domain.post.PostLike;
 import com.myproject.community.domain.post.QPost;
 import com.myproject.community.domain.post.QPostImage;
+import com.myproject.community.domain.post.QPostLike;
 import com.myproject.community.infra.querydsl.QuerydslUtils;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -63,13 +66,28 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
         QPostImage postImage = QPostImage.postImage;
         QMember member = QMember.member;
 
+        QPostLike postLike = QPostLike.postLike;
+
 
         PostDetailDto postDetailDto = queryFactory
-            .select(new QPostDetailDto(post.id, post.title, post.content, member.nickName))
+            .select(new QPostDetailDto(post.id, post.title, post.content, member.nickName,  post.isDeleted))
             .from(post)
             .join(member).on(member.id.eq(post.member.id))
             .where(post.id.eq(postId))
             .fetchOne();
+
+        Long likeCount = Optional.ofNullable(
+            queryFactory
+                .select(postLike.count())
+                .from(postLike)
+                .where(postLike.post.id.eq(postId))
+                .fetchOne()
+        ).orElse(0L);
+
+        assert postDetailDto != null;
+        postDetailDto.setLikeCount(likeCount);
+
+
 
         List<String> path = queryFactory
             .select(image.path)
