@@ -1,6 +1,7 @@
 package com.myproject.community.domain.category;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -24,6 +25,9 @@ public class Category {
 
     private String name;
 
+    @Column(unique = true)
+    private int displayOrder;
+
     @ManyToOne(fetch = FetchType.LAZY)
     private Category parent;
 
@@ -41,5 +45,9 @@ public class Category {
     private void addChild(Category category) {
         children.add(category);
         category.parent = this;
+    }
+
+    public void updateDisplayOrder(int newDisplayOrder) {
+        this.displayOrder = newDisplayOrder;
     }
 }

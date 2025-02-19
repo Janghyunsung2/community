@@ -12,12 +12,17 @@ public class CategoryDto {
     private long id;
     @NotBlank
     private String name;
+    private int displayOrder;
 
     @Builder
     @QueryProjection
     public CategoryDto(long id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public void updateDisplayOrder(int displayOrder) {
+        this.displayOrder = displayOrder;
     }
 
     public void createRootCategory(String name){

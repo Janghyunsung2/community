@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -82,6 +83,12 @@ public class PostServiceImpl implements PostService {
     private Post findPostById(long postId) {
         return postRepository.findById(postId)
             .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+    }
+
+    @Transactional
+    public void postViewCount(long postId) {
+        Post post = findPostById(postId);
+        post.viewCount();
     }
 
 }

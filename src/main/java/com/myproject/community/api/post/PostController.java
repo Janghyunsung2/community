@@ -32,6 +32,7 @@ public class PostController {
 
     @GetMapping("/api/posts/{postId}")
     public ResponseEntity<PostDetailDto> getPost(@PathVariable long postId){
+        postService.postViewCount(postId);
         return ResponseEntity.ok(postService.getPostDetail(postId));
     }
 

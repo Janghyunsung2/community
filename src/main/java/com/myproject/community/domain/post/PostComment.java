@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -28,4 +29,10 @@ public class PostComment {
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
 
+    @Builder
+    public PostComment(Post post, Comment comment, Member member) {
+        this.post = post;
+        this.comment = comment;
+        this.member = member;
+    }
 }
