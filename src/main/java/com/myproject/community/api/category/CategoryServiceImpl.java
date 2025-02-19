@@ -1,6 +1,7 @@
 package com.myproject.community.api.category;
 
 import com.myproject.community.domain.category.Category;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,8 +15,14 @@ public class CategoryServiceImpl implements CategoryService {
     public void saveRootCategory(CategoryDto categoryDto){
         Category category = Category.builder()
             .name(categoryDto.getName()).build();
+        category.updateDisplayOrder(categoryDto.getDisplayOrder());
         categoryRepository.save(category);
 
+    }
+
+    @Override
+    public List<CategoryMainDto> getMainCategory() {
+        return categoryRepository.getTop6ByOrderByOrderAsc();
     }
 
     @Transactional

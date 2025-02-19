@@ -1,8 +1,10 @@
 package com.myproject.community.api.category.querydsl.impl;
 
+import com.myproject.community.api.category.CategoryMainDto;
 import com.myproject.community.api.category.CategoryWithChildrenDto;
 import com.myproject.community.api.category.CategoryDto;
 import com.myproject.community.api.category.QCategoryDto;
+import com.myproject.community.api.category.QCategoryMainDto;
 import com.myproject.community.api.category.querydsl.CategoryRepositoryCustom;
 import com.myproject.community.domain.category.QCategory;
 import com.querydsl.core.types.Projections;
@@ -39,6 +41,15 @@ public class CategoryRepositoryImpl implements CategoryRepositoryCustom {
                 return new CategoryWithChildrenDto(parentDto, children);
             })
             .toList();
+    }
+
+    public List<CategoryMainDto> getTop6ByOrderByOrderAsc() {
+        QCategory category = QCategory.category;
+        return queryFactory.select(new QCategoryMainDto(category.id, category.name, category.displayOrder))
+            .from(category)
+            .where(category.displayOrder.between(1, 6))
+            .orderBy(category.displayOrder.asc())
+            .fetch();
     }
 
 

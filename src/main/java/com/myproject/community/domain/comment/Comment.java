@@ -8,11 +8,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Comment {
@@ -26,11 +30,31 @@ public class Comment {
     @ManyToOne(fetch = FetchType.LAZY)
     private Comment parent;
 
+    private LocalDateTime createdAt;
+
+    private boolean isDeleted;
+
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Comment> children = new ArrayList<>();
+
+    @Builder
+    public Comment(String content, Comment parent) {
+        this.content = content;
+        this.parent = parent;
+        this.createdAt = LocalDateTime.now();
+        this.isDeleted = false;
+    }
 
     public void addChild(Comment child) {
         children.add(child);
         child.parent = this;
+    }
+
+    public void updateComment(String content) {
+        this.content = content;
+    }
+
+    public void isDeleted() {
+        isDeleted = true;
     }
 }

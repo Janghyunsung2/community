@@ -29,6 +29,8 @@ public enum ErrorCode {
 
     IMAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "이미지 저장 실패"),
     CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "채팅방을 찾을 수 없음"),
+
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없음"),
     /* 409 CONFLICT : Resource 의 현재 상태와 충돌. 보통 중복된 데이터 존재 */
 
     /* 500 INTERNAL_SERVER_ERROR : 서버오류 */

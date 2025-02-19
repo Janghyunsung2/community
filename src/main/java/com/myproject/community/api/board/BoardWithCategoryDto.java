@@ -25,4 +25,6 @@ public class BoardWithCategoryDto {
         this.active = active;
         this.categoryId = categoryId;
     }
+
+
 }

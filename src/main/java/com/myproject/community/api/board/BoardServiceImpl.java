@@ -6,6 +6,7 @@ import com.myproject.community.domain.category.Category;
 import com.myproject.community.domain.category.CategoryBoard;
 import com.myproject.community.error.CustomException;
 import com.myproject.community.error.ErrorCode;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +27,7 @@ public class BoardServiceImpl implements BoardService {
             .description(boardWithCategoryDto.getDescription())
             .active(boardWithCategoryDto.isActive())
             .build();
+
         boardRepository.save(board);
 
         Category category = categoryRepository.findById(boardWithCategoryDto.getCategoryId())
@@ -33,6 +35,11 @@ public class BoardServiceImpl implements BoardService {
         CategoryBoard categoryBoard = CategoryBoard.builder().board(board).category(category).build();
 
         categoryBoardRepository.save(categoryBoard);
+    }
+
+    @Override
+    public List<BoardMainDto> getBoardsByMainCategory() {
+        return boardRepository.getBoardMainByTop6Category();
     }
 
     @Transactional

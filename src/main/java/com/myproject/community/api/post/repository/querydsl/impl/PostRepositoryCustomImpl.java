@@ -39,11 +39,11 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
         PathBuilder<QPost> entityPath = new PathBuilder<>(QPost.class, "post");
 
         List<PostListDto> postListDtos = queryFactory
-            .select(new QPostListDto(post.id, post.title, post.member.nickName, post.createdAt))
+            .select(new QPostListDto(post.id, post.title, post.member.nickName, post.createdAt, post.viewCount))
             .from(post)
             .join(board)
             .on(post.board.id.eq(board.id))
-            .where(post.board.id.eq(boardId))
+            .where(post.board.id.eq(boardId).and(post.isDeleted.eq(false)))
             .orderBy(QuerydslUtils.getOrderSpecifiers(pageable, entityPath).toArray(new OrderSpecifier[0]))
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
@@ -83,6 +83,8 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
                 .where(postLike.post.id.eq(postId))
                 .fetchOne()
         ).orElse(0L);
+
+
 
         assert postDetailDto != null;
         postDetailDto.setLikeCount(likeCount);
