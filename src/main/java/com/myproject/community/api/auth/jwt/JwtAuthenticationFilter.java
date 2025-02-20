@@ -32,17 +32,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
                 return;
             }
-
-            TokenInfo tokenInfo = jwtProvider.validateToken(token);
-            if (tokenInfo != null) {
-                Authentication authentication = jwtProvider.getAuthentication(
-                    tokenInfo.getAccessToken());
+                Authentication authentication = jwtProvider.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            }
         }catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Unauthorized");
+            return;
         }
 
         filterChain.doFilter(request, response);
