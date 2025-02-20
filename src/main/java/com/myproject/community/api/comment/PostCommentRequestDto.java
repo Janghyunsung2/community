@@ -10,6 +10,6 @@ public class PostCommentRequestDto {
 
     @NotNull
     private String content;
-    private long commentId;
+    private long parentId;
 
 }

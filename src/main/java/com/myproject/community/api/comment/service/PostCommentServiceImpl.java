@@ -39,7 +39,7 @@ public class PostCommentServiceImpl implements PostCommentService {
 
         Member member = memberRepository.findById(authUserId)
             .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-        Comment parent = commentRepository.findById(postCommentRequestDto.getCommentId())
+        Comment parent = commentRepository.findById(postCommentRequestDto.getParentId())
             .orElse(null);
         Comment comment = Comment.builder().content(postCommentRequestDto.getContent())
             .parent(parent).build();
