@@ -45,7 +45,7 @@ public class Member {
     @Builder
     public Member(String name, String phoneNumber, String email, String nickName, LocalDate birthday,  Gender gender) {
         this.name = name;
-        this.phoneNumber = null;
+        this.phoneNumber = phoneNumber;
         this.email = email;
         this.nickName = nickName;
         this.birthday = birthday;
@@ -57,12 +57,10 @@ public class Member {
         this.lastLoginDate = LocalDate.now();
     }
 
-    public void updateMember(String nickName, String phoneNumber, String email, LocalDate birthday) {
+    public void updateMember(String name, String nickName, LocalDate birthday) {
         this.nickName = nickName;
-        this.phoneNumber = phoneNumber;
-        this.email = email;
+        this.name = name;
         this.birthday = birthday;
-        this.createDate = LocalDate.now();
     }
 
 

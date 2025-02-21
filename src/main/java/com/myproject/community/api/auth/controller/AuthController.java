@@ -2,16 +2,21 @@ package com.myproject.community.api.auth.controller;
 
 import com.myproject.community.api.auth.cookie.CookieUtil;
 import com.myproject.community.api.auth.dto.MemberLoginDto;
+import com.myproject.community.api.auth.dto.PasswordRequestDto;
 import com.myproject.community.api.auth.dto.VerifyEmailDto;
 import com.myproject.community.api.auth.service.auth.AuthService;
 import com.myproject.community.api.auth.service.email.EmailService;
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,12 +40,23 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
-//    @PostMapping("/check")
-//    public ResponseEntity<Void> loginCheck(HttpServletRequest request) {
-//        cookieUtil.getAccessTokenHttpSecureCookie()
-//        return ResponseEntity.ok().build();
-//    }
+    @GetMapping("/me")
+    public ResponseEntity<?> getCurrentUser(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+        }
+        // authentication.getPrinipal()에는 사용자의 상세 정보가 들어있음.
+        return ResponseEntity.ok(authentication.getPrincipal());
+    }
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        Cookie accessTokenCookie = cookieUtil.removeAccessTokenCookie();
+        Cookie refreshTokenCookie = cookieUtil.removeRefreshTokenCookie();
 
+        response.addCookie(accessTokenCookie);
+        response.addCookie(refreshTokenCookie);
+        return ResponseEntity.ok().build();
+    }
 
     @PostMapping("/send-email")
     public ResponseEntity<?> sendEmail(@RequestParam String email) throws MessagingException {
@@ -58,7 +74,12 @@ public class AuthController {
 
         }
         return ResponseEntity.ok("이메일 인증 완료!");
+    }
 
+    @PostMapping("/check-password")
+    public ResponseEntity<?> checkPassword(@RequestBody PasswordRequestDto password, HttpServletRequest request){
+        boolean check = authService.passwordCheckByMember(password, request);
+        return ResponseEntity.ok(check);
     }
 
 

@@ -18,5 +18,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query("update Member m set m.lastLoginDate = CURRENT_DATE where m.id = :memberId")
     void updateByMemberId(@Param("memberId")long memberId);
 
-
+    @Query("select case when count(m) > 0 then true else false end from Member m where m.nickName = :nickname")
+    boolean existsByNickname(String nickname);
 }
