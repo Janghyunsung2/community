@@ -14,7 +14,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Base64;
 import java.util.Date;
@@ -41,13 +40,11 @@ public class JwtProvider {
     private SecretKey key;
     private static final String JWT_KEY_PREFIX = "jwt:";
     private final RedisTemplate<String, String> redisTemplate;
-    private final MemberService memberService;
     private final UserDetailsService userDetailsService;
 
-    public JwtProvider(RedisTemplate<String, String> redisTemplate, MemberService memberService,
+    public JwtProvider(RedisTemplate<String, String> redisTemplate,
         AccountRepository accountRepository, UserDetailsService userDetailsService) {
         this.redisTemplate = redisTemplate;
-        this.memberService = memberService;
         this.accountRepository = accountRepository;
         this.userDetailsService = userDetailsService;
     }
@@ -75,32 +72,32 @@ public class JwtProvider {
             .build();
     }
 
-    public TokenInfo validateToken(String reqRefreshToken) {
-        Claims claims = parseClaims(reqRefreshToken);
-        String refreshToken = redisTemplate.opsForValue().get(JWT_KEY_PREFIX + claims.getSubject());
+//    public TokenInfo validateToken(String reqRefreshToken) {
+//        Claims claims = parseClaims(reqRefreshToken);
+//        String refreshToken = redisTemplate.opsForValue().get(JWT_KEY_PREFIX + claims.getSubject());
+//
+//        if(!refreshToken.equals(reqRefreshToken)){
+//            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
+//        }
+//
+//        long memberId = Long.parseLong(parseClaims(refreshToken).getSubject());
+//        MemberAuthDto authMember = memberService.getAuthMember(memberId);
+//
+//        return generateToken(authMember);
+//    }
 
-        if(!refreshToken.equals(reqRefreshToken)){
-            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
-        }
-
-        long memberId = Long.parseLong(parseClaims(refreshToken).getSubject());
-        MemberAuthDto authMember = memberService.getAuthMember(memberId);
-
-        return generateToken(authMember);
-    }
-
-    public TokenInfo reissueToken(String refreshToken) {
-        Claims claims = parseClaims(refreshToken);
-        String refresh = redisTemplate.opsForValue().get(JWT_KEY_PREFIX + claims.getSubject());
-
-        if(!refresh.equals(refreshToken)){
-            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
-        }
-        long memberId = Long.parseLong(parseClaims(refresh).getSubject());
-        MemberAuthDto authMember = memberService.getAuthMember(memberId);
-
-        return generateToken(authMember);
-    }
+//    public TokenInfo reissueToken(String refreshToken) {
+//        Claims claims = parseClaims(refreshToken);
+//        String refresh = redisTemplate.opsForValue().get(JWT_KEY_PREFIX + claims.getSubject());
+//
+//        if(!refresh.equals(refreshToken)){
+//            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
+//        }
+//        long memberId = Long.parseLong(parseClaims(refresh).getSubject());
+//        MemberAuthDto authMember = memberService.getAuthMember(memberId);
+//
+//        return generateToken(authMember);
+//    }
 
 
     public void deleteRefreshToken(Long userId){

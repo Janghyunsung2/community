@@ -12,11 +12,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class MemberUpdateDto {
 
-    private long id;
-    private String password;
     private String name;
     private String nickname;
-    private String email;
-    private String phone;
+    private String password;
     private LocalDate birthday;
 }

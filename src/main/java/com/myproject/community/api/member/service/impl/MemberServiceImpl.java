@@ -3,6 +3,7 @@ package com.myproject.community.api.member.service.impl;
 import com.myproject.community.api.account.AccountRepository;
 import com.myproject.community.api.auth.dto.MemberAuthDto;
 import com.myproject.community.api.auth.dto.MemberAuthDto.MemberAccount;
+import com.myproject.community.api.auth.jwt.JwtProvider;
 import com.myproject.community.api.member.dto.MemberUpdateDto;
 import com.myproject.community.api.member.repository.GenderRepository;
 import com.myproject.community.api.member.repository.MemberRepository;
@@ -14,11 +15,14 @@ import com.myproject.community.domain.gender.Gender;
 import com.myproject.community.domain.member.Member;
 import com.myproject.community.error.CustomException;
 import com.myproject.community.error.ErrorCode;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
@@ -27,13 +31,14 @@ public class MemberServiceImpl implements MemberService {
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
     private final GenderRepository genderRepository;
+    private final JwtProvider jwtProvider;
 
     @Transactional
     @Override
     public void registerMember(MemberCreateDto dto) {
 
         Gender gender = genderRepository
-            .findByName(dto.getGender()).orElse( new Gender(dto.getGender()));
+            .findByName(dto.getGender()).orElse(genderRepository.save(new Gender(dto.getGender())));
 
 
         Member member = Member.builder()
@@ -44,16 +49,18 @@ public class MemberServiceImpl implements MemberService {
             .nickName(dto.getNickname())
             .gender(gender)
             .build();
-        memberRepository.save(member);
 
         Account account = Account.builder()
             .member(member)
             .username(dto.getUsername())
-            .password(dto.getPassword())
+            .password(passwordEncoder.encode(dto.getPassword()))
             .role(Role.MEMBER)
             .build();
 
+        memberRepository.saveAndFlush(member);
         accountRepository.save(account);
+
+        log.info("회원가입 성공");
 
     }
 
@@ -84,11 +91,26 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Transactional
-    public void updateMember(MemberUpdateDto dto) {
-        Member member = memberRepository.findById(dto.getId())
+    public void updateMember(MemberUpdateDto dto, HttpServletRequest request) {
+        long memberId = jwtProvider.getAuthUserId(request);
+        Member member = memberRepository.findById(memberId)
             .orElseThrow(() -> new CustomException(ErrorCode.QUIT_ACCOUNT));
 
-        member.updateMember(dto.getNickname(), dto.getPhone(), dto.getEmail(), dto.getBirthday());
+        member.updateMember(dto.getName(), dto.getNickname(), dto.getBirthday());
 
+        Account account = accountRepository.findById(memberId)
+            .orElseThrow(() -> new CustomException(ErrorCode.QUIT_ACCOUNT));
+
+        account.updatePassword(passwordEncoder.encode(dto.getPassword()));
+    }
+
+    @Override
+    public boolean isNickNameExist(String nickName) {
+        return memberRepository.existsByNickname(nickName);
+    }
+
+    @Override
+    public boolean isUserNameExist(String username) {
+        return accountRepository.existsByUsername(username);
     }
 }

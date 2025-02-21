@@ -42,4 +42,8 @@ public class Account {
         this.id = member.getId();
     }
 
+    public void updatePassword(String password) {
+        this.password = password;
+    }
+
 }
