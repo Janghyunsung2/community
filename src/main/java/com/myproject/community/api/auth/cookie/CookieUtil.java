@@ -59,6 +59,7 @@ public class CookieUtil {
         cookie.setSecure(!profile.equals("dev"));
         cookie.setPath("/");
         cookie.setMaxAge(0);  // 만료된 쿠키로 설정
+
         return cookie;
     }
 

@@ -4,6 +4,7 @@ import com.myproject.community.api.account.AccountRepository;
 import com.myproject.community.domain.account.Account;
 import com.myproject.community.error.CustomException;
 import com.myproject.community.error.ErrorCode;
+import java.util.Locale;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;

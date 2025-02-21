@@ -3,6 +3,7 @@ package com.myproject.community.api.auth.service.auth.impl;
 import com.myproject.community.api.account.AccountRepository;
 import com.myproject.community.api.auth.cookie.CookieUtil;
 import com.myproject.community.api.auth.dto.MemberAuthDto;
+import com.myproject.community.api.auth.dto.MemberAuthDto.MemberAccount;
 import com.myproject.community.api.auth.dto.MemberLoginDto;
 import com.myproject.community.api.auth.dto.PasswordRequestDto;
 import com.myproject.community.api.auth.jwt.JwtProvider;
@@ -19,6 +20,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -37,8 +39,7 @@ public class AuthServiceImpl implements AuthService {
             new UsernamePasswordAuthenticationToken(memberLoginDto.getUsername(),
                 memberLoginDto.getPassword()));
 
-        MemberAuthDto authMember = memberService.getAuthMember(
-            memberService.getMemberIdByUsername(memberLoginDto.getUsername()));
+        MemberAuthDto authMember = getAuthMember(memberService.getMemberIdByUsername(memberLoginDto.getUsername()));
 
         memberService.updateLastLogin(authMember.getUserId());
 
@@ -49,6 +50,7 @@ public class AuthServiceImpl implements AuthService {
         return tokenInfo;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public boolean passwordCheckByMember(PasswordRequestDto passwordRequestDto,
         HttpServletRequest request) {
@@ -60,6 +62,23 @@ public class AuthServiceImpl implements AuthService {
             new UsernamePasswordAuthenticationToken(account.getUsername(), passwordRequestDto.getPassword()));
 
        return authenticate.isAuthenticated();
+    }
+
+    @Transactional(readOnly = true)
+    public String getMemberUsername(long memberId) {
+        return accountRepository.findById(memberId)
+            .orElseThrow(()-> new CustomException(ErrorCode.MEMBER_NOT_FOUND))
+            .getUsername();
+    }
+
+
+    public MemberAuthDto getAuthMember(long memberId) {
+
+        Account account = accountRepository.findById(memberId)
+            .orElseThrow(() -> new CustomException(ErrorCode.QUIT_ACCOUNT));
+        MemberAccount memberAccount = new MemberAccount(account.getUsername(),
+            account.getPassword());
+        return new MemberAuthDto(memberId, memberAccount, account.getRole());
     }
 
 

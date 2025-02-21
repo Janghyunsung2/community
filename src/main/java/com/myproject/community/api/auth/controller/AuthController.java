@@ -1,9 +1,12 @@
 package com.myproject.community.api.auth.controller;
 
 import com.myproject.community.api.auth.cookie.CookieUtil;
+import com.myproject.community.api.auth.dto.MemberAuthDto;
 import com.myproject.community.api.auth.dto.MemberLoginDto;
 import com.myproject.community.api.auth.dto.PasswordRequestDto;
 import com.myproject.community.api.auth.dto.VerifyEmailDto;
+import com.myproject.community.api.auth.jwt.JwtProvider;
+import com.myproject.community.api.auth.jwt.TokenInfo;
 import com.myproject.community.api.auth.service.auth.AuthService;
 import com.myproject.community.api.auth.service.email.EmailService;
 import jakarta.mail.MessagingException;
@@ -31,6 +34,7 @@ public class AuthController {
     private final AuthService authService;
     private final EmailService emailService;
     private final CookieUtil cookieUtil;
+    private final JwtProvider jwtProvider;
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@Validated @RequestBody MemberLoginDto loginDto, HttpServletResponse response) {
@@ -46,7 +50,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
         // authentication.getPrinipal()에는 사용자의 상세 정보가 들어있음.
-        return ResponseEntity.ok(authentication.getPrincipal());
+        return ResponseEntity.ok(true);
     }
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
@@ -80,6 +84,19 @@ public class AuthController {
     public ResponseEntity<?> checkPassword(@RequestBody PasswordRequestDto password, HttpServletRequest request){
         boolean check = authService.passwordCheckByMember(password, request);
         return ResponseEntity.ok(check);
+    }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response){
+        String refreshToken = cookieUtil.getTokenFromCookie(request, "refresh_token").orElse(null);
+        if(refreshToken != null){
+            long memberId = jwtProvider.getAuthUserId(request);
+            MemberAuthDto authMember = authService.getAuthMember(memberId);
+            TokenInfo tokenInfo = jwtProvider.reissueToken(refreshToken, authMember);
+            cookieUtil.setAuthCookies(tokenInfo, response);
+            return ResponseEntity.ok(tokenInfo);
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
     }
 
 
