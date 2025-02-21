@@ -4,6 +4,7 @@ import com.myproject.community.api.account.AccountRepository;
 import com.myproject.community.api.auth.dto.MemberAuthDto;
 import com.myproject.community.api.auth.dto.MemberAuthDto.MemberAccount;
 import com.myproject.community.api.auth.jwt.JwtProvider;
+import com.myproject.community.api.member.dto.MemberResponseDto;
 import com.myproject.community.api.member.dto.MemberUpdateDto;
 import com.myproject.community.api.member.repository.GenderRepository;
 import com.myproject.community.api.member.repository.MemberRepository;
@@ -112,5 +113,11 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public boolean isUserNameExist(String username) {
         return accountRepository.existsByUsername(username);
+    }
+
+    @Override
+    public MemberResponseDto getMyPageMember(HttpServletRequest request) {
+        long memberId = jwtProvider.getAuthUserId(request);
+        return memberRepository.findByMemberId(memberId).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     }
 }

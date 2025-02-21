@@ -1,6 +1,8 @@
 package com.myproject.community.api.member.controller;
 
+import com.myproject.community.api.auth.jwt.JwtProvider;
 import com.myproject.community.api.member.dto.MemberCreateDto;
+import com.myproject.community.api.member.dto.MemberResponseDto;
 import com.myproject.community.api.member.dto.MemberUpdateDto;
 import com.myproject.community.api.member.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,8 +37,11 @@ public class MemberController {
         return ResponseEntity.ok("Member updated successfully");
     }
 
-
-
+    @GetMapping
+    public ResponseEntity<MemberResponseDto> getMember(HttpServletRequest request){
+        MemberResponseDto myPageMember = memberService.getMyPageMember(request);
+        return ResponseEntity.ok(myPageMember);
+    }
 
 
     @GetMapping("/check-nickname")
