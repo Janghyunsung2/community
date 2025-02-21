@@ -3,9 +3,7 @@ package com.myproject.community.api.auth.jwt;
 import com.myproject.community.api.account.AccountRepository;
 import com.myproject.community.api.auth.dto.MemberAuthDto;
 
-import com.myproject.community.api.member.service.MemberService;
-import com.myproject.community.domain.account.Account;
-import com.myproject.community.domain.member.Member;
+
 import com.myproject.community.error.CustomException;
 import com.myproject.community.error.ErrorCode;
 import io.jsonwebtoken.Claims;
@@ -14,22 +12,23 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+
 import java.util.Base64;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import javax.crypto.SecretKey;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class JwtProvider {
 
     private final AccountRepository accountRepository;
@@ -40,14 +39,8 @@ public class JwtProvider {
     private SecretKey key;
     private static final String JWT_KEY_PREFIX = "jwt:";
     private final RedisTemplate<String, String> redisTemplate;
-    private final UserDetailsService userDetailsService;
 
-    public JwtProvider(RedisTemplate<String, String> redisTemplate,
-        AccountRepository accountRepository, UserDetailsService userDetailsService) {
-        this.redisTemplate = redisTemplate;
-        this.accountRepository = accountRepository;
-        this.userDetailsService = userDetailsService;
-    }
+
 
     @PostConstruct
     protected void init(){
@@ -72,32 +65,27 @@ public class JwtProvider {
             .build();
     }
 
-//    public TokenInfo validateToken(String reqRefreshToken) {
-//        Claims claims = parseClaims(reqRefreshToken);
-//        String refreshToken = redisTemplate.opsForValue().get(JWT_KEY_PREFIX + claims.getSubject());
-//
-//        if(!refreshToken.equals(reqRefreshToken)){
-//            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
-//        }
-//
-//        long memberId = Long.parseLong(parseClaims(refreshToken).getSubject());
-//        MemberAuthDto authMember = memberService.getAuthMember(memberId);
-//
-//        return generateToken(authMember);
-//    }
+    public TokenInfo validateToken(String reqRefreshToken, MemberAuthDto authMember) {
+        Claims claims = parseClaims(reqRefreshToken);
+        String refreshToken = redisTemplate.opsForValue().get(JWT_KEY_PREFIX + claims.getSubject());
 
-//    public TokenInfo reissueToken(String refreshToken) {
-//        Claims claims = parseClaims(refreshToken);
-//        String refresh = redisTemplate.opsForValue().get(JWT_KEY_PREFIX + claims.getSubject());
-//
-//        if(!refresh.equals(refreshToken)){
-//            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
-//        }
-//        long memberId = Long.parseLong(parseClaims(refresh).getSubject());
-//        MemberAuthDto authMember = memberService.getAuthMember(memberId);
-//
-//        return generateToken(authMember);
-//    }
+        if(!refreshToken.equals(reqRefreshToken)){
+            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
+        }
+
+        return generateToken(authMember);
+    }
+
+    public TokenInfo reissueToken(String refreshToken, MemberAuthDto authMember) {
+        Claims claims = parseClaims(refreshToken);
+        String refresh = redisTemplate.opsForValue().get(JWT_KEY_PREFIX + claims.getSubject());
+
+        if(!refresh.equals(refreshToken)){
+            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
+        }
+
+        return generateToken(authMember);
+    }
 
 
     public void deleteRefreshToken(Long userId){
@@ -106,35 +94,53 @@ public class JwtProvider {
             log.warn("삭제할 리프레시 토큰이 없습니다. userId: {}", userId);  // ✅ 삭제할 토큰이 없을 경우 경고 로그 추가
         }
     }
-
-    public Authentication getAuthentication(String token) {
-        Claims claims = parseClaims(token);
-        String userId = claims.getSubject();
-        Account account = accountRepository.findById(Long.parseLong(userId))
-            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-        String username = account.getUsername();
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
-    }
+//
+//    public Authentication getAuthentication(String token) {
+//        Claims claims = parseClaims(token);
+//        String userId = claims.getSubject();
+//
+//        return new UsernamePasswordAuthenticationToken(userId, "", new ArrayList<>());
+//    }
 
     public long getAuthUserId(HttpServletRequest request) {
         // claims.getSubject() 값이 userId
-        String token = resolveTokenFromCookie(request);
+        String token = resolveAccessTokenFromCookie(request);
         Claims claims = parseClaims(token);
         String userId = claims.getSubject();
         return Long.parseLong(userId);
     }
 
-    private String resolveTokenFromCookie(HttpServletRequest request) {
+    public long getMemberIdByRefreshToken(HttpServletRequest request) {
+        String refreshToken = resolveRefreshTokenFromCookie(request);
+        Claims claims = parseClaims(refreshToken);
+        String userId = claims.getSubject();
+        return Long.parseLong(userId);
+    }
+
+
+
+    private String resolveAccessTokenFromCookie(HttpServletRequest request) {
         if (request.getCookies() != null) {
-            for (jakarta.servlet.http.Cookie cookie : request.getCookies()) {
+            for (Cookie cookie : request.getCookies()) {
                 if ("access-token".equals(cookie.getName())) {  // 🔹 JWT가 저장된 쿠키 이름 확인
                     return cookie.getValue();
                 }
             }
         }
         log.warn("JWT 쿠키가 존재하지 않습니다.");
-        throw new CustomException(ErrorCode.INVALID_TOKEN);
+        return null;
+    }
+
+    private String resolveRefreshTokenFromCookie(HttpServletRequest request) {
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("refresh-token".equals(cookie.getName())) {  // 🔹 JWT가 저장된 쿠키 이름 확인
+                    return cookie.getValue();
+                }
+            }
+        }
+        log.warn("JWT 쿠키가 존재하지 않습니다.");
+        return null;
     }
 
 
