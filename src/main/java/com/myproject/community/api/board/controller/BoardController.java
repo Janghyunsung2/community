@@ -17,11 +17,6 @@ public class BoardController {
 
     private final BoardService boardService;
 
-    @PostMapping("/api/admin/boards")
-    public ResponseEntity<Void> createBoard(@RequestBody BoardWithCategoryDto boardWithCategoryDto) {
-        boardService.createBoard(boardWithCategoryDto);
-        return ResponseEntity.ok().build();
-    }
 
     @GetMapping("/api/boards/main")
     public ResponseEntity<List<BoardMainDto>> getBoardsMain(){

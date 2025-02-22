@@ -1,16 +1,18 @@
-package com.myproject.community.api.comment.querydsl.impl;
+package com.myproject.community.api.comment.repository.querydsl.impl;
 
-import com.myproject.community.api.comment.PostCommentResponseDto;
-import com.myproject.community.api.comment.PostCommentResponseGroupDto;
-import com.myproject.community.api.comment.QPostCommentResponseDto;
-import com.myproject.community.api.comment.querydsl.CommentRepositoryCustom;
-import com.myproject.community.domain.comment.Comment;
+import com.myproject.community.api.comment.dto.PostCommentResponseDto;
+import com.myproject.community.api.comment.dto.PostCommentResponseGroupDto;
+import com.myproject.community.api.comment.dto.QPostCommentResponseDto;
+import com.myproject.community.api.comment.repository.querydsl.CommentRepositoryCustom;
 import com.myproject.community.domain.comment.QComment;
 import com.myproject.community.domain.comment.QCommentLike;
 import com.myproject.community.domain.member.QMember;
 import com.myproject.community.domain.post.QPost;
 import com.myproject.community.domain.post.QPostComment;
+import com.myproject.community.infra.querydsl.QuerydslUtils;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,6 +21,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -91,6 +96,35 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
         }
 
         return result;
+    }
+
+    public Page<PostCommentResponseDto> getPostCommentsAll(Pageable pageable) {
+        QPost qPost = QPost.post;
+        QPostComment qPostComment = QPostComment.postComment;
+        QComment qComment = QComment.comment;
+        QMember qMember = QMember.member;
+
+        PathBuilder<QComment> entityPath = new PathBuilder<>(QComment.class, "comment");
+        List<PostCommentResponseDto> postCommentResponseDtos = queryFactory.selectDistinct(
+                new QPostCommentResponseDto(qComment.id, qComment.content, qComment.createdAt,
+                    qMember.nickName))
+            .from(qComment)
+            .join(qPostComment).on(qComment.id.eq(qPostComment.comment.id))
+            .join(qPost).on(qPost.id.eq(qPostComment.post.id))
+            .join(qMember).on(qMember.id.eq(qPostComment.member.id))
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .orderBy(QuerydslUtils.getOrderSpecifiers(pageable, entityPath)
+                .toArray(new OrderSpecifier[0]))
+            .fetch();
+
+        Long total = queryFactory
+            .select(qComment.count())
+            .from(qComment)
+            .join(qPostComment).on(qComment.id.eq(qPostComment.comment.id))
+            .fetchOne();
+
+        return new PageImpl<>(postCommentResponseDtos, pageable, total == null ? 0 : total);
     }
 
 

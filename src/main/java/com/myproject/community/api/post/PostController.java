@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -30,6 +31,17 @@ public class PostController {
         return ResponseEntity.ok(postService.getPosts(boardId, pageable));
     }
 
+    @GetMapping("/api/admin/posts")
+    public ResponseEntity<Page<PostListDto>> getAdminPosts(Pageable pageable){
+        return ResponseEntity.ok(postService.getPostAll(pageable));
+    }
+
+    @DeleteMapping("/api/admin/posts")
+    public ResponseEntity<?> deleteAdminPost(@RequestParam long id){
+        postService.deleteAdminPost(id);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/api/posts/{postId}")
     public ResponseEntity<PostDetailDto> getPost(@PathVariable long postId){
         return ResponseEntity.ok(postService.getPostDetail(postId));
@@ -46,4 +58,6 @@ public class PostController {
         postService.deletePost(postId);
         return ResponseEntity.ok().build();
     }
+
+
 }

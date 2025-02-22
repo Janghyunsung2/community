@@ -2,6 +2,7 @@ package com.myproject.community.api.category.service;
 
 import com.myproject.community.api.category.dto.CategoryDto;
 import com.myproject.community.api.category.dto.CategoryMainDto;
+import com.myproject.community.api.category.dto.CategoryResponseDto;
 import java.util.List;
 
 public interface CategoryService {
@@ -12,4 +13,6 @@ public interface CategoryService {
     void updateCategory(long id, CategoryDto categoryDto);
 
     void deleteCategory(long categoryId);
+
+    List<CategoryResponseDto> getCategoryAll();
 }

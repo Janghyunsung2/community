@@ -3,8 +3,9 @@ package com.myproject.community.api.category.repository.querydsl.impl;
 import com.myproject.community.api.category.dto.CategoryMainDto;
 import com.myproject.community.api.category.dto.CategoryWithChildrenDto;
 import com.myproject.community.api.category.dto.CategoryDto;
-import com.myproject.community.api.category.QCategoryDto;
-import com.myproject.community.api.category.QCategoryMainDto;
+
+import com.myproject.community.api.category.dto.QCategoryDto;
+import com.myproject.community.api.category.dto.QCategoryMainDto;
 import com.myproject.community.api.category.repository.querydsl.CategoryRepositoryCustom;
 import com.myproject.community.domain.category.QCategory;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -24,7 +25,7 @@ public class CategoryRepositoryImpl implements CategoryRepositoryCustom {
 
         QCategory category = QCategory.category;
         List<CategoryDto> parentCategories = queryFactory
-            .select(new QCategoryDto(category.id, category.name))
+            .select(new QCategoryDto(category.name))
             .from(category)
             .where(category.parent.isNull())
             .fetch();
@@ -32,9 +33,9 @@ public class CategoryRepositoryImpl implements CategoryRepositoryCustom {
         return parentCategories.stream()
             .map(parentDto -> {
                 List<CategoryDto> children = queryFactory
-                    .select(new QCategoryDto(category.id, category.name))
+                    .select(new QCategoryDto(category.name))
                     .from(category)
-                    .where(category.parent.id.eq(parentDto.getId()))
+                    .where(category.parent.name.eq(parentDto.getName()))
                     .fetch();
 
                 return new CategoryWithChildrenDto(parentDto, children);

@@ -43,7 +43,7 @@ public class Member {
     private Gender gender;
 
     @Builder
-    public Member(String name, String phoneNumber, String email, String nickName, LocalDate birthday,  Gender gender) {
+    public Member(String name, String phoneNumber, String email, String nickName, LocalDate birthday,  Gender gender, MemberStatus memberStatus) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.email = email;
@@ -51,6 +51,7 @@ public class Member {
         this.birthday = birthday;
         this.createDate = LocalDate.now();
         this.gender = gender;
+        this.memberStatus = memberStatus;
     }
 
     public void updateLastLoginDate() {

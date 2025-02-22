@@ -1,9 +1,12 @@
 package com.myproject.community.api.comment.service;
 
-import com.myproject.community.api.comment.PostCommentRequestDto;
-import com.myproject.community.api.comment.PostCommentResponseGroupDto;
+import com.myproject.community.api.comment.dto.PostCommentRequestDto;
+import com.myproject.community.api.comment.dto.PostCommentResponseDto;
+import com.myproject.community.api.comment.dto.PostCommentResponseGroupDto;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface PostCommentService {
     void postCommentSave(long postId, PostCommentRequestDto postCommentRequestDto, HttpServletRequest request);
@@ -12,6 +15,10 @@ public interface PostCommentService {
 
     void updatePostComment(long commentId, PostCommentRequestDto postCommentRequestDto);
 
-    void deletePostComment(long commentId);
+    void deletePostCommenMember(long commentId);
+
+    Page<PostCommentResponseDto> getCommentAll(Pageable pageable);
+
+    void deletePostCommentAdmin(long commentId);
 
 }

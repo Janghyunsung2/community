@@ -14,5 +14,8 @@ public interface PostService {
     void updatePost(long postId, PostUpdateDto postUpdateDto);
 
     void deletePost(long postId);
+    void deleteAdminPost(long postId);
+
+    Page<PostListDto> getPostAll(Pageable pageable);
 
 }

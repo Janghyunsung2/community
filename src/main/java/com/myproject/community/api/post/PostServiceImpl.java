@@ -92,6 +92,19 @@ public class PostServiceImpl implements PostService {
         post.authorDelete();
     }
 
+    @Transactional
+    public void deleteAdminPost(long postId) {
+        Post post = findPostById(postId);
+        post.authorDelete();
+    }
+
+    @Override
+    public Page<PostListDto> getPostAll(Pageable pageable) {
+        Page<PostListDto> postAll = postRepository.getPostAll(pageable);
+        postAll.getContent().forEach(postListDto -> postListDto.setViews(getPostViewCount(postListDto.getPostId())));
+        return postAll;
+    }
+
     private Post findPostById(long postId) {
         return postRepository.findById(postId)
             .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));

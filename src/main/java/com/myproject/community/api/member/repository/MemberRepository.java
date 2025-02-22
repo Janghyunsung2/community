@@ -1,6 +1,7 @@
 package com.myproject.community.api.member.repository;
 
 import com.myproject.community.api.member.dto.MemberResponseDto;
+import com.myproject.community.api.member.repository.querydsl.CustomMemberRepository;
 import com.myproject.community.domain.member.Member;
 import io.lettuce.core.dynamic.annotation.Param;
 import java.util.Optional;
@@ -9,7 +10,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
-public interface MemberRepository extends JpaRepository<Member, Long> {
+public interface MemberRepository extends JpaRepository<Member, Long>, CustomMemberRepository {
 
 
     @Query("select m.id from Member m join Account a on a.member.id = m.id where a.username = :username or m.phoneNumber = :username or m.email = :username ")
