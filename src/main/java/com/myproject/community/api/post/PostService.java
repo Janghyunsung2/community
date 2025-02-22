@@ -15,5 +15,4 @@ public interface PostService {
 
     void deletePost(long postId);
 
-    void postViewCount(long postId);
 }

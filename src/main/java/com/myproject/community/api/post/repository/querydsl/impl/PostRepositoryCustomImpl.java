@@ -9,6 +9,7 @@ import com.myproject.community.domain.board.QBoard;
 import com.myproject.community.domain.image.QImage;
 import com.myproject.community.domain.member.QMember;
 import com.myproject.community.domain.post.PostLike;
+import com.myproject.community.domain.post.PostStatus;
 import com.myproject.community.domain.post.QPost;
 import com.myproject.community.domain.post.QPostImage;
 import com.myproject.community.domain.post.QPostLike;
@@ -39,17 +40,17 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
         PathBuilder<QPost> entityPath = new PathBuilder<>(QPost.class, "post");
 
         List<PostListDto> postListDtos = queryFactory
-            .select(new QPostListDto(post.id, post.title, post.member.nickName, post.createdAt, post.viewCount))
+            .select(new QPostListDto(post.id, post.title, post.member.nickName, post.createdAt))
             .from(post)
             .join(board)
             .on(post.board.id.eq(board.id))
-            .where(post.board.id.eq(boardId).and(post.isDeleted.eq(false)))
+            .where(post.board.id.eq(boardId).and(post.postStatus.eq(PostStatus.ACTIVE)))
             .orderBy(QuerydslUtils.getOrderSpecifiers(pageable, entityPath).toArray(new OrderSpecifier[0]))
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();
 
-        long total = queryFactory
+        Long total = queryFactory
             .select(post.count())
             .from(post)
             .where(post.board.id.eq(boardId))
@@ -70,7 +71,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 
 
         PostDetailDto postDetailDto = queryFactory
-            .select(new QPostDetailDto(post.id, post.title, post.content, member.nickName,  post.isDeleted))
+            .select(new QPostDetailDto(post.id, post.title, post.content, member.nickName,  post.postStatus.eq(PostStatus.ACTIVE)))
             .from(post)
             .join(member).on(member.id.eq(post.member.id))
             .where(post.id.eq(postId))

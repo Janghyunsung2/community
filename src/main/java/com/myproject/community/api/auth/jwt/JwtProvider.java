@@ -34,8 +34,8 @@ public class JwtProvider {
     private final AccountRepository accountRepository;
     @Value("${jwt.secret.key}")
     private String secret;
-    private final int accessExpirationTime = 1000 * 60 * 60;
-    private final int refreshExpirationTime = 1000 * 60 * 60;
+    private final int accessExpirationTime = 1000 * 60 * 10;
+    private final int refreshExpirationTime = 1000 * 60 * 60 * 24 * 3;
     private SecretKey key;
     private static final String JWT_KEY_PREFIX = "jwt:";
     private final RedisTemplate<String, String> redisTemplate;

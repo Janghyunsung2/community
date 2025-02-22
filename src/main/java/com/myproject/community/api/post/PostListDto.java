@@ -17,11 +17,16 @@ public class PostListDto {
     private long views;
 
     @QueryProjection
-    public PostListDto(long postId, String title, String nickName, LocalDateTime createAt, long views) {
+    public PostListDto(long postId, String title, String nickName, LocalDateTime createAt) {
         this.postId = postId;
         this.title = title;
         this.nickName = nickName;
         this.createAt = createAt;
+    }
+
+    public void setViews(long views) {
         this.views = views;
     }
+
+
 }

@@ -2,8 +2,8 @@ package com.myproject.community.api.category.initailize;
 
 import com.myproject.community.api.board.BoardService;
 import com.myproject.community.api.board.BoardWithCategoryDto;
-import com.myproject.community.api.category.CategoryDto;
-import com.myproject.community.api.category.CategoryService;
+import com.myproject.community.api.category.dto.CategoryDto;
+import com.myproject.community.api.category.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;

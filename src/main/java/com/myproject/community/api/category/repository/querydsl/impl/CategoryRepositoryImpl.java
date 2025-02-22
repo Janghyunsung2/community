@@ -1,13 +1,12 @@
-package com.myproject.community.api.category.querydsl.impl;
+package com.myproject.community.api.category.repository.querydsl.impl;
 
-import com.myproject.community.api.category.CategoryMainDto;
-import com.myproject.community.api.category.CategoryWithChildrenDto;
-import com.myproject.community.api.category.CategoryDto;
+import com.myproject.community.api.category.dto.CategoryMainDto;
+import com.myproject.community.api.category.dto.CategoryWithChildrenDto;
+import com.myproject.community.api.category.dto.CategoryDto;
 import com.myproject.community.api.category.QCategoryDto;
 import com.myproject.community.api.category.QCategoryMainDto;
-import com.myproject.community.api.category.querydsl.CategoryRepositoryCustom;
+import com.myproject.community.api.category.repository.querydsl.CategoryRepositoryCustom;
 import com.myproject.community.domain.category.QCategory;
-import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

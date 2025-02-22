@@ -1,6 +1,6 @@
 package com.myproject.community.api.board;
 
-import com.myproject.community.api.category.CategoryRepository;
+import com.myproject.community.api.category.repository.CategoryRepository;
 import com.myproject.community.domain.board.Board;
 import com.myproject.community.domain.category.Category;
 import com.myproject.community.domain.category.CategoryBoard;
