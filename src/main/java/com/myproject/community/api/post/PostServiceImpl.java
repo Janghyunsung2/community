@@ -1,6 +1,5 @@
 package com.myproject.community.api.post;
 
-import com.myproject.community.api.auth.cookie.CookieUtil;
 import com.myproject.community.api.auth.jwt.JwtProvider;
 import com.myproject.community.api.board.BoardRepository;
 import com.myproject.community.api.image.PostImageService;
@@ -15,9 +14,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,6 +30,9 @@ public class PostServiceImpl implements PostService {
     private final BoardRepository boardRepository;
     private final PostImageService postImageService;
     private final JwtProvider jwtProvider;
+    private final RedisTemplate<String, String> redisTemplate;
+
+    private static final String VIEW_COUNT_PREFIX = "post:view:";
 
 
     @Transactional
@@ -60,12 +63,22 @@ public class PostServiceImpl implements PostService {
     @Transactional(readOnly = true)
     @Override
     public Page<PostListDto> getPosts(long boardId, Pageable pageable) {
-        return postRepository.findPostsByBoardId(boardId, pageable);
+
+        Page<PostListDto> postsByBoardId = postRepository.findPostsByBoardId(boardId, pageable);
+
+        postsByBoardId.getContent().forEach(postListDto -> postListDto.setViews(getPostViewCount(postListDto.getPostId())));
+
+        return postsByBoardId;
     }
 
     @Transactional(readOnly = true)
     public PostDetailDto getPostDetail(long postId) {
-        return postRepository.findPostById(postId);
+        PostDetailDto postById = postRepository.findPostById(postId);
+        Long viewCount = postViewCount(postId);
+        if(viewCount > 0) {
+            postById.setViewCount(viewCount);
+        }
+        return postById;
     }
 
     @Transactional
@@ -77,7 +90,7 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public void deletePost(long postId) {
         Post post = findPostById(postId);
-        post.delete();
+        post.authorDelete();
     }
 
     private Post findPostById(long postId) {
@@ -85,10 +98,18 @@ public class PostServiceImpl implements PostService {
             .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
     }
 
-    @Transactional
-    public void postViewCount(long postId) {
-        Post post = findPostById(postId);
-        post.viewCount();
+    private Long postViewCount(long postId) {
+        String redisKey = VIEW_COUNT_PREFIX + postId;
+        return redisTemplate.opsForValue().increment(redisKey);
+    }
+
+    private Long getPostViewCount(long postId) {
+        String redisKey = VIEW_COUNT_PREFIX + postId;
+        String viewCount = redisTemplate.opsForValue().get(redisKey);
+        if(viewCount != null) {
+            return Long.parseLong(viewCount);
+        }
+        return 0L;
     }
 
 }

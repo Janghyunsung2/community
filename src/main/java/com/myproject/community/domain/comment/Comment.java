@@ -2,6 +2,8 @@ package com.myproject.community.domain.comment;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -32,7 +34,8 @@ public class Comment {
 
     private LocalDateTime createdAt;
 
-    private boolean isDeleted;
+    @Enumerated(EnumType.STRING)
+    private CommentStatus commentStatus;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Comment> children = new ArrayList<>();
@@ -42,7 +45,7 @@ public class Comment {
         this.content = content;
         this.parent = parent;
         this.createdAt = LocalDateTime.now();
-        this.isDeleted = false;
+        this.commentStatus = CommentStatus.ACTIVE;
     }
 
     public void addChild(Comment child) {
@@ -55,6 +58,10 @@ public class Comment {
     }
 
     public void isDeleted() {
-        isDeleted = true;
+        commentStatus = CommentStatus.AUTHOR_DELETED;
+    }
+
+    public void adminDelete() {
+        commentStatus = CommentStatus.ADMIN_DELETED;
     }
 }

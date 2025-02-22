@@ -19,6 +19,8 @@ public class PostDetailDto {
     private boolean isDeleted;
     @Setter
     private long likeCount;
+    @Setter
+    private long viewCount;
 
     @QueryProjection
     public PostDetailDto(long id, String title, String content,  String nickname, boolean isDeleted) {

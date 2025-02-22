@@ -1,4 +1,4 @@
-package com.myproject.community.api.category;
+package com.myproject.community.api.category.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;

@@ -7,7 +7,8 @@ public enum Status {
 
     MEMBER("회원"),
     WITHDRAWAL("탈퇴"),
-    DORMANCY("휴먼");
+    DORMANCY("휴먼"),
+    PERMANENT_BAN("영구정지");
 
     private final String description;
 

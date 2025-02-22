@@ -9,7 +9,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
-import java.util.concurrent.atomic.AtomicLong;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,7 +27,7 @@ public class Post {
 
     private String content;
 
-    private boolean isDeleted;
+    private PostStatus postStatus;
 
     private LocalDateTime createdAt;
 
@@ -40,17 +39,16 @@ public class Post {
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
 
-    private AtomicLong atomicLong = new AtomicLong(0L);
 
     @Builder
     public Post(String title, String content, Board board, Member member) {
         this.title = title;
         this.content = content;
         this.board = board;
-        this.isDeleted = false;
+        this.postStatus = PostStatus.ACTIVE;
         this.member = member;
         this.createdAt = LocalDateTime.now();
-        this.viewCount = atomicLong.get();
+        this.viewCount = 0L;
     }
 
     public void update(String title, String content){
@@ -58,12 +56,14 @@ public class Post {
         this.content = content;
     }
 
-    public void delete(){
-        this.isDeleted = true;
+    public void authorDelete(){
+        this.postStatus = PostStatus.AUTHOR_DELETED;
     }
 
-    public void viewCount(){
-        this.viewCount = atomicLong.incrementAndGet();
+    public void adminDelete(){
+        this.postStatus = PostStatus.ADMIN_DELETED;
     }
+
+
 
 }

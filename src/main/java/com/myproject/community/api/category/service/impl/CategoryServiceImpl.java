@@ -1,5 +1,10 @@
-package com.myproject.community.api.category;
+package com.myproject.community.api.category.service.impl;
 
+import com.myproject.community.api.category.dto.CategoryChildrenDto;
+import com.myproject.community.api.category.dto.CategoryDto;
+import com.myproject.community.api.category.dto.CategoryMainDto;
+import com.myproject.community.api.category.repository.CategoryRepository;
+import com.myproject.community.api.category.service.CategoryService;
 import com.myproject.community.domain.category.Category;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
