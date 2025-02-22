@@ -14,6 +14,8 @@ import com.myproject.community.error.CustomException;
 import com.myproject.community.error.ErrorCode;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,21 +27,20 @@ public class BoardServiceImpl implements BoardService {
     private final CategoryBoardRepository categoryBoardRepository;
     private final CategoryRepository categoryRepository;
 
-
+    @Transactional
     public void createBoard(BoardWithCategoryDto boardWithCategoryDto) {
-
+        if (isDuplicateBoardTitle(boardWithCategoryDto.getTitle())) {
+            throw new CustomException(ErrorCode.BOARD_TITLE_DUPLICATE);
+        }
         Board board = Board.builder()
             .title(boardWithCategoryDto.getTitle())
             .description(boardWithCategoryDto.getDescription())
             .active(boardWithCategoryDto.isActive())
             .build();
-
         boardRepository.save(board);
-
         Category category = categoryRepository.findById(boardWithCategoryDto.getCategoryId())
             .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
         CategoryBoard categoryBoard = CategoryBoard.builder().board(board).category(category).build();
-
         categoryBoardRepository.save(categoryBoard);
     }
 
@@ -49,9 +50,12 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Transactional
-    public void updateBoard(BoardWithCategoryDto boardWithCategoryDto) {
-        Board board = boardRepository.findById(boardWithCategoryDto.getId())
-            .orElseThrow(() -> new CustomException(ErrorCode.BOARD_NOT_FOUND));
+    public void updateBoard(long id, BoardWithCategoryDto boardWithCategoryDto) {
+
+        if (isDuplicateBoardTitle(boardWithCategoryDto.getTitle())) {
+            throw new CustomException(ErrorCode.BOARD_TITLE_DUPLICATE);
+        }
+        Board board = findBoardById(id);
         board.update(boardWithCategoryDto.getTitle(), boardWithCategoryDto.getDescription(), boardWithCategoryDto.isActive());
     }
 
@@ -61,4 +65,25 @@ public class BoardServiceImpl implements BoardService {
 
         return new BoardDto(board.getId(), board.getTitle(), board.getDescription(), board.isActive());
     }
+
+    @Transactional(readOnly = true)
+    public Page<BoardDto> getBoardsAdminPage(Pageable pageable) {
+        return boardRepository.getBoardByAdminPage(pageable);
+    }
+
+    @Transactional
+    public void deleteBoard(long id) {
+        findBoardById(id).unActivate();
+    }
+
+    private Boolean isDuplicateBoardTitle(String title) {
+        return boardRepository.findByTitle(title).isPresent();
+    }
+
+    private Board findBoardById(long id) {
+        return boardRepository.findById(id)
+            .orElseThrow(() -> new CustomException(ErrorCode.BOARD_NOT_FOUND));
+    }
+
+
 }

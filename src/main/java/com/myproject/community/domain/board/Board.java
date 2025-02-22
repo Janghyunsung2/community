@@ -36,4 +36,8 @@ public class Board {
         this.description = description;
         this.active = active;
     }
+
+    public void unActivate() {
+        this.active = false;
+    }
 }

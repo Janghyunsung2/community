@@ -1,4 +1,4 @@
-package com.myproject.community.api.comment;
+package com.myproject.community.api.comment.repository;
 
 import com.myproject.community.domain.post.PostComment;
 import org.springframework.data.jpa.repository.JpaRepository;

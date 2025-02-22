@@ -9,8 +9,11 @@ import jakarta.persistence.Id;
 
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Entity
 @Table(name = "member_status")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -23,5 +26,9 @@ public class MemberStatus {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    @Builder
+    public MemberStatus(Status status) {
+        this.status = status;
+    }
 }
 

@@ -1,4 +1,4 @@
-package com.myproject.community.api.comment;
+package com.myproject.community.api.comment.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

@@ -56,7 +56,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
             .where(post.board.id.eq(boardId))
             .fetchOne();
 
-        return new PageImpl<>(postListDtos, pageable, total);
+        return new PageImpl<>(postListDtos, pageable, total == null ? 0 : total);
     }
 
     @Override

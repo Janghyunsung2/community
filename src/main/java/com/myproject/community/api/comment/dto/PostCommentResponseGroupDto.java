@@ -1,4 +1,4 @@
-package com.myproject.community.api.comment;
+package com.myproject.community.api.comment.dto;
 
 import java.util.List;
 import lombok.AllArgsConstructor;

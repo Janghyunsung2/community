@@ -12,6 +12,7 @@ public enum ErrorCode {
     CHAT_BAD_REQUEST(HttpStatus.BAD_REQUEST, "올바른 메세지가 아닙니다."),
 
     CATEGORY_NAME_DUPLICATE(HttpStatus.BAD_REQUEST, "이미 존재하는 카테고리입니다"),
+    BOARD_TITLE_DUPLICATE(HttpStatus.BAD_REQUEST, "이미 존재하는 게시판입니다"),
 
     /* 401 UNAUTHORIZED : 인증되지 않은 사용자 */
     PASSWORD_NOT_MATCHED(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."),

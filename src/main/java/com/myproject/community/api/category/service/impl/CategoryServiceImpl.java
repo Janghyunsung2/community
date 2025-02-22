@@ -3,6 +3,7 @@ package com.myproject.community.api.category.service.impl;
 import com.myproject.community.api.category.dto.CategoryChildrenDto;
 import com.myproject.community.api.category.dto.CategoryDto;
 import com.myproject.community.api.category.dto.CategoryMainDto;
+import com.myproject.community.api.category.dto.CategoryResponseDto;
 import com.myproject.community.api.category.repository.CategoryRepository;
 import com.myproject.community.api.category.service.CategoryService;
 import com.myproject.community.domain.category.Category;
@@ -55,6 +56,11 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void deleteCategory(long categoryId) {
         categoryRepository.deleteById(categoryId);
+    }
+
+    @Override
+    public List<CategoryResponseDto> getCategoryAll() {
+        return categoryRepository.findAllCategories();
     }
 
     private Category findCategoryById(long id) {

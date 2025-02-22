@@ -1,5 +1,6 @@
 package com.myproject.community.api.board.dto;
 
+import com.querydsl.core.annotations.QueryProjection;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -19,6 +20,7 @@ public class BoardDto {
 
     private boolean active;
 
+    @QueryProjection
     @Builder
     public BoardDto(long id, String title, String description, boolean active) {
         this.id = id;

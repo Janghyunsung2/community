@@ -1,11 +1,11 @@
 package com.myproject.community.api.comment.service;
 
 import com.myproject.community.api.auth.jwt.JwtProvider;
-import com.myproject.community.api.comment.CommentRepository;
-import com.myproject.community.api.comment.PostCommentRepository;
-import com.myproject.community.api.comment.PostCommentRequestDto;
-import com.myproject.community.api.comment.PostCommentResponseDto;
-import com.myproject.community.api.comment.PostCommentResponseGroupDto;
+import com.myproject.community.api.comment.dto.PostCommentResponseDto;
+import com.myproject.community.api.comment.repository.CommentRepository;
+import com.myproject.community.api.comment.repository.PostCommentRepository;
+import com.myproject.community.api.comment.dto.PostCommentRequestDto;
+import com.myproject.community.api.comment.dto.PostCommentResponseGroupDto;
 import com.myproject.community.api.member.repository.MemberRepository;
 import com.myproject.community.api.post.repository.PostRepository;
 import com.myproject.community.domain.comment.Comment;
@@ -17,6 +17,8 @@ import com.myproject.community.error.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,9 +59,26 @@ public class PostCommentServiceImpl implements PostCommentService {
     }
 
     @Transactional
-    public void deletePostComment(long commentId){
+    @Override
+    public void deletePostCommenMember(long commentId) {
+        getCommentById(commentId).adminDelete();
+    }
+
+    @Transactional
+    public void deletePostCommentMember(long commentId){
         Comment comment = getCommentById(commentId);
         comment.isDeleted();
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Page<PostCommentResponseDto> getCommentAll(Pageable pageable) {
+        return commentRepository.getPostCommentsAll(pageable);
+    }
+
+    @Override
+    public void deletePostCommentAdmin(long commentId) {
+
     }
 
     private Comment getCommentById(long commentId){

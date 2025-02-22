@@ -26,21 +26,26 @@ public class CategoryController {
         return ResponseEntity.ok(categoryService.getMainCategory());
     }
 
-    @PostMapping("/api/admin/category")
+    @PostMapping("/api/admin/categories")
     public ResponseEntity<?> createCategory(@RequestBody CategoryDto categoryDto) {
         categoryService.saveRootCategory(categoryDto);
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/api/admin/category")
+    @PutMapping("/api/admin/categories")
     public ResponseEntity<?> updateCategory(@RequestParam long id, @RequestBody CategoryDto categoryDto) {
         categoryService.updateCategory(id, categoryDto);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/api/admin/category")
+    @DeleteMapping("/api/admin/categories")
     public ResponseEntity<?> deleteCategory(@RequestParam long id) {
         categoryService.deleteCategory(id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/api/admin/categories")
+    public ResponseEntity<?> getCategoryAll(){
+        return ResponseEntity.ok(categoryService.getCategoryAll());
     }
 }
