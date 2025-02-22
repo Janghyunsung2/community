@@ -11,6 +11,8 @@ public enum ErrorCode {
     /* 400 BAD_REQUEST : 잘못된 요청 */
     CHAT_BAD_REQUEST(HttpStatus.BAD_REQUEST, "올바른 메세지가 아닙니다."),
 
+    CATEGORY_NAME_DUPLICATE(HttpStatus.BAD_REQUEST, "이미 존재하는 카테고리입니다"),
+
     /* 401 UNAUTHORIZED : 인증되지 않은 사용자 */
     PASSWORD_NOT_MATCHED(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."),
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "refresh token이 일치하지 않습니다."),

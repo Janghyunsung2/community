@@ -6,6 +6,8 @@ import com.myproject.community.api.category.dto.CategoryMainDto;
 import com.myproject.community.api.category.repository.CategoryRepository;
 import com.myproject.community.api.category.service.CategoryService;
 import com.myproject.community.domain.category.Category;
+import com.myproject.community.error.CustomException;
+import com.myproject.community.error.ErrorCode;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,11 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Transactional
     public void saveRootCategory(CategoryDto categoryDto){
+        boolean isDuplicate = categoryRepository.findByName(categoryDto.getName()).isPresent();
+        if(isDuplicate){
+            throw new CustomException(ErrorCode.CATEGORY_NAME_DUPLICATE);
+        }
+
         Category category = Category.builder()
             .name(categoryDto.getName()).build();
         category.updateDisplayOrder(categoryDto.getDisplayOrder());
@@ -31,9 +38,34 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Transactional
+    @Override
+    public void updateCategory(long id, CategoryDto categoryDto) {
+        Category category = findCategoryById(id);
+        String name = categoryDto.getName();
+        boolean isDuplicate = categoryRepository.findByName(name).isPresent();
+        if(name != null || !isDuplicate){
+            category.updateName(name);
+        }
+        if(categoryDto.getDisplayOrder() > 0){
+            category.updateDisplayOrder(categoryDto.getDisplayOrder());
+        }
+
+    }
+
+    @Override
+    public void deleteCategory(long categoryId) {
+        categoryRepository.deleteById(categoryId);
+    }
+
+    private Category findCategoryById(long id) {
+        return categoryRepository.findById(id)
+            .orElseThrow(()-> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
+    }
+
+    @Transactional
     public void saveChildCategory(CategoryChildrenDto categoryChildrenDto){
-        long parentId = categoryChildrenDto.getParent().getId();
-        Category parent = categoryRepository.findById(parentId).orElse(null);
+        String parentName = categoryChildrenDto.getParent().getName();
+        Category parent = categoryRepository.findByName(parentName).orElse(null);
 
         Category child = Category.builder()
             .name(categoryChildrenDto.getName())

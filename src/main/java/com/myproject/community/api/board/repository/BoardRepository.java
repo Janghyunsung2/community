@@ -1,6 +1,6 @@
-package com.myproject.community.api.board;
+package com.myproject.community.api.board.repository;
 
-import com.myproject.community.api.board.queydsl.BoardRepositoryCustom;
+import com.myproject.community.api.board.repository.queydsl.BoardRepositoryCustom;
 import com.myproject.community.domain.board.Board;
 import org.springframework.data.jpa.repository.JpaRepository;
 

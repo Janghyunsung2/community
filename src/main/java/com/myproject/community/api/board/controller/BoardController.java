@@ -1,5 +1,8 @@
-package com.myproject.community.api.board;
+package com.myproject.community.api.board.controller;
 
+import com.myproject.community.api.board.dto.BoardMainDto;
+import com.myproject.community.api.board.service.BoardService;
+import com.myproject.community.api.board.dto.BoardWithCategoryDto;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

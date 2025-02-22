@@ -1,10 +1,8 @@
-package com.myproject.community.api.board.queydsl.impl;
+package com.myproject.community.api.board.repository.queydsl.impl;
 
-import com.myproject.community.api.board.BoardMainDto;
-import com.myproject.community.api.board.BoardRepository;
+import com.myproject.community.api.board.dto.BoardMainDto;
 import com.myproject.community.api.board.QBoardMainDto;
-import com.myproject.community.api.board.queydsl.BoardRepositoryCustom;
-import com.myproject.community.api.category.QCategoryMainDto;
+import com.myproject.community.api.board.repository.queydsl.BoardRepositoryCustom;
 import com.myproject.community.domain.board.QBoard;
 import com.myproject.community.domain.category.QCategory;
 import com.myproject.community.domain.category.QCategoryBoard;

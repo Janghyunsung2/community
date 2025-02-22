@@ -1,5 +1,11 @@
-package com.myproject.community.api.board;
+package com.myproject.community.api.board.service.impl;
 
+import com.myproject.community.api.board.repository.BoardRepository;
+import com.myproject.community.api.board.repository.CategoryBoardRepository;
+import com.myproject.community.api.board.dto.BoardDto;
+import com.myproject.community.api.board.dto.BoardMainDto;
+import com.myproject.community.api.board.dto.BoardWithCategoryDto;
+import com.myproject.community.api.board.service.BoardService;
 import com.myproject.community.api.category.repository.CategoryRepository;
 import com.myproject.community.domain.board.Board;
 import com.myproject.community.domain.category.Category;

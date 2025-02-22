@@ -1,7 +1,7 @@
 package com.myproject.community.api.category.initailize;
 
-import com.myproject.community.api.board.BoardService;
-import com.myproject.community.api.board.BoardWithCategoryDto;
+import com.myproject.community.api.board.service.BoardService;
+import com.myproject.community.api.board.dto.BoardWithCategoryDto;
 import com.myproject.community.api.category.dto.CategoryDto;
 import com.myproject.community.api.category.service.CategoryService;
 import lombok.RequiredArgsConstructor;

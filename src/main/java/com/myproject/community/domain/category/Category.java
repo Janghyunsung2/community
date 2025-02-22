@@ -50,4 +50,8 @@ public class Category {
     public void updateDisplayOrder(int newDisplayOrder) {
         this.displayOrder = newDisplayOrder;
     }
+
+    public void updateName(String name) {
+        this.name = name;
+    }
 }

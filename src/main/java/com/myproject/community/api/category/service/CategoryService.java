@@ -8,4 +8,8 @@ public interface CategoryService {
     void saveRootCategory(CategoryDto categoryDto);
 
     List<CategoryMainDto> getMainCategory();
+
+    void updateCategory(long id, CategoryDto categoryDto);
+
+    void deleteCategory(long categoryId);
 }

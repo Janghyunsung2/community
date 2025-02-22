@@ -1,6 +1,6 @@
 package com.myproject.community.api.board.initailize;
 
-import com.myproject.community.api.board.BoardService;
+import com.myproject.community.api.board.service.BoardService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;

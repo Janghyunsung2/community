@@ -8,16 +8,14 @@ import lombok.Getter;
 @Getter
 public class CategoryDto {
 
-    @NotBlank
-    private long id;
+
     @NotBlank
     private String name;
     private int displayOrder;
 
     @Builder
     @QueryProjection
-    public CategoryDto(long id, String name) {
-        this.id = id;
+    public CategoryDto(String name) {
         this.name = name;
     }
 

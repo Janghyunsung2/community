@@ -1,7 +1,7 @@
 package com.myproject.community.api.post;
 
 import com.myproject.community.api.auth.jwt.JwtProvider;
-import com.myproject.community.api.board.BoardRepository;
+import com.myproject.community.api.board.repository.BoardRepository;
 import com.myproject.community.api.image.PostImageService;
 import com.myproject.community.api.member.repository.MemberRepository;
 import com.myproject.community.api.post.repository.PostRepository;
@@ -14,7 +14,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
