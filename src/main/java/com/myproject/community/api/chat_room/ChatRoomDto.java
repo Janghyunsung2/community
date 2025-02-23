@@ -14,4 +14,5 @@ public class ChatRoomDto {
 
     private String name;
     private int capacity;
+    private long categoryId;
 }

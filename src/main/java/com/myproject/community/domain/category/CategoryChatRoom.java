@@ -26,4 +26,8 @@ public class CategoryChatRoom {
     @ManyToOne(fetch = FetchType.LAZY)
     private ChatRoom chatRoom;
 
+    public CategoryChatRoom(Category category , ChatRoom chatRoom) {
+        this.category = category;
+        this.chatRoom = chatRoom;
+    }
 }

@@ -8,30 +8,26 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ChatRoom {
+@Getter
+public class ChatRoomMember {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private String title;
-
-    private int capacity;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private ChatRoom chatRoom;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
 
-    @Builder
-    public ChatRoom(String title, int capacity, Member member) {
-        this.title = title;
-        this.capacity = capacity;
+    public ChatRoomMember(ChatRoom chatRoom, Member member) {
+        this.chatRoom = chatRoom;
         this.member = member;
     }
 }
