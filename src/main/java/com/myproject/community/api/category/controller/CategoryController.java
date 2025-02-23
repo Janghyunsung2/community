@@ -48,4 +48,9 @@ public class CategoryController {
     public ResponseEntity<?> getCategoryAll(){
         return ResponseEntity.ok(categoryService.getCategoryAll());
     }
+
+    @GetMapping("/api/categories")
+    public ResponseEntity<?> categoryAll(){
+        return ResponseEntity.ok(categoryService.getCategoryAll());
+    }
 }

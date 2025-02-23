@@ -1,5 +1,6 @@
 package com.myproject.community.api.chat;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,13 +18,13 @@ public class ChatController {
     private final ChatService chatService;
 
 
-    @PostMapping("/{roomId}/message")
-    public ResponseEntity<String> saveMessage(@PathVariable long roomId, ChatRequestDto chatRequestDto) {
-        chatService.saveMessage(chatRequestDto);
-        return ResponseEntity.ok("Message saved to room " + chatRequestDto.getRoomId());
+    @PostMapping("/{room-id}/message")
+    public ResponseEntity<String> saveMessage(@PathVariable long roomId, ChatRequestDto chatRequestDto, HttpServletRequest request) {
+        chatService.saveMessage(roomId, chatRequestDto,request);
+        return ResponseEntity.ok("Message saved to room " + roomId);
     }
 
-    @GetMapping("/{roomId}/message")
+    @GetMapping("/{room-id}/message")
     public ResponseEntity<String> getMessage(@PathVariable long roomId) {
         List<ChatResponseDto> chatMessages = chatService.getChatMessages(roomId);
         return ResponseEntity.ok(chatMessages.toString());

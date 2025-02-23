@@ -1,5 +1,6 @@
 package com.myproject.community.api.chat_room;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -11,15 +12,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/char-room")
+@RequestMapping("/api/chat-room")
 @RequiredArgsConstructor
 public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
 
     @PostMapping
-    public ResponseEntity<String> createChatRoom(@RequestBody ChatRoomDto chatRoomDto){
-        chatRoomService.createChatRoom(chatRoomDto);
+    public ResponseEntity<String> createChatRoom(@RequestBody ChatRoomDto chatRoomDto, HttpServletRequest request) {
+        chatRoomService.createChatRoom(chatRoomDto, request);
         return ResponseEntity.ok("Chat room created");
     }
 
@@ -34,5 +35,14 @@ public class ChatRoomController {
         ChatRoomResponseDto chatRoom = chatRoomService.getChatRoom(id);
         return ResponseEntity.ok(chatRoom);
     }
+
+    @PostMapping("{room-id}/join")
+    public ResponseEntity<String> joinChatRoom(@PathVariable long roomId, HttpServletRequest request) {
+        chatRoomService.joinChatRoom(roomId, request);
+        return ResponseEntity.ok("Chat room joined");
+    }
+
+
+
 
 }
