@@ -5,6 +5,7 @@ import java.util.List;
 
 public interface ChatService {
 
-    void saveMessage(long roomId, ChatRequestDto chatRequestDto, HttpServletRequest request);
-    List<ChatResponseDto> getChatMessages(long roomId);
+    void saveMessage(long roomId, ChatMessageDto chatMessageDto);
+
+    List<ChatMessageDto> getChatHistory(Long roomId);
 }

@@ -9,6 +9,7 @@ import com.myproject.community.api.auth.dto.PasswordRequestDto;
 import com.myproject.community.api.auth.jwt.JwtProvider;
 import com.myproject.community.api.auth.jwt.TokenInfo;
 import com.myproject.community.api.auth.service.auth.AuthService;
+import com.myproject.community.api.member.dto.MemberResponseDto;
 import com.myproject.community.api.member.service.MemberService;
 import com.myproject.community.domain.account.Account;
 import com.myproject.community.error.CustomException;
@@ -79,6 +80,11 @@ public class AuthServiceImpl implements AuthService {
         MemberAccount memberAccount = new MemberAccount(account.getUsername(),
             account.getPassword());
         return new MemberAuthDto(memberId, memberAccount, account.getRole());
+    }
+
+    @Override
+    public MemberResponseDto getMemberResponse(HttpServletRequest request) {
+        return memberService.getMyPageMember(request);
     }
 
 

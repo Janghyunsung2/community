@@ -111,10 +111,13 @@ public class MemberServiceImpl implements MemberService {
 
         member.updateMember(dto.getName(), dto.getNickname(), dto.getBirthday());
 
-        Account account = accountRepository.findById(memberId)
-            .orElseThrow(() -> new CustomException(ErrorCode.QUIT_ACCOUNT));
 
-        account.updatePassword(passwordEncoder.encode(dto.getPassword()));
+        if(dto.getPassword() != null) {
+            Account account = accountRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.QUIT_ACCOUNT));
+            account.updatePassword(passwordEncoder.encode(dto.getPassword()));
+        }
+
     }
 
     @Transactional(readOnly = true)
