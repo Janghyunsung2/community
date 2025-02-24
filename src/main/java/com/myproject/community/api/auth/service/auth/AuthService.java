@@ -4,6 +4,7 @@ import com.myproject.community.api.auth.dto.MemberAuthDto;
 import com.myproject.community.api.auth.dto.MemberLoginDto;
 import com.myproject.community.api.auth.dto.PasswordRequestDto;
 import com.myproject.community.api.auth.jwt.TokenInfo;
+import com.myproject.community.api.member.dto.MemberResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -16,4 +17,9 @@ public interface AuthService {
     String getMemberUsername(long memberId);
 
     MemberAuthDto getAuthMember(long memberId);
+
+    MemberResponseDto getMemberResponse(HttpServletRequest request);
+
+
+
 }

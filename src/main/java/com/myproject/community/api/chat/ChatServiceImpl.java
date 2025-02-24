@@ -14,6 +14,7 @@ import com.myproject.community.error.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Duration;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ChatServiceImpl implements ChatService {
 
-    private final RedisTemplate<String, String> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
     private final ObjectMapper objectMapper;
 
     private static final String CHAT_ROOM_PREFIX = "chat_room:";
@@ -33,38 +34,46 @@ public class ChatServiceImpl implements ChatService {
     private final MemberRepository memberRepository;
     private final JwtProvider jwtProvider;
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
-    public void saveMessage(long roomId, ChatRequestDto chatRequestDto, HttpServletRequest httpServletRequest) throws CustomException {
-        long memberId = jwtProvider.getAuthUserId(httpServletRequest);
-        Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-
-        chatRequestDto.updateNickname(member.getNickName());
+    public void saveMessage(long roomId, ChatMessageDto chatMessageDto) throws CustomException {
+//        long memberId = jwtProvider.getAuthUserId(httpServletRequest);
+//        Member member = memberRepository.findById(memberId)
+//            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+//
+//        chatMessageDto.updateSender(member.getNickName());
+        String key = CHAT_ROOM_PREFIX + roomId;
 
         try {
-            String messageJson = objectMapper.writeValueAsString(chatRequestDto);
-            String redisKEy = CHAT_ROOM_PREFIX + roomId;
-            redisTemplate.opsForList().rightPush(redisKEy, messageJson);
-            redisTemplate.expire(redisKEy, MESSAGE_TTL);
+           String jsonMessage = objectMapper.writeValueAsString(chatMessageDto);
+            redisTemplate.opsForList().rightPush(key, jsonMessage);
+
         } catch (JsonProcessingException e) {
-            throw new CustomException(ErrorCode.CHAT_BAD_REQUEST);
+            throw new RuntimeException(e);
         }
+
     }
 
-    @Override
-    public List<ChatResponseDto> getChatMessages(long roomId) {
-        String redisKEy = CHAT_ROOM_PREFIX + roomId;
-        List<String> messageJson = redisTemplate.opsForList().range(redisKEy, 0, -1);
+    public List<ChatMessageDto> getChatHistory(Long roomId) {
+        String key = CHAT_ROOM_PREFIX + roomId;
+        List<Object> messages = redisTemplate.opsForList().range(key, 0, -1);
 
-
-
-        return messageJson.stream().map(json -> {
-            try {
-                return objectMapper.readValue(json, ChatResponseDto.class);
-            }catch (JsonProcessingException e){
-                throw new CustomException(ErrorCode.CHAT_BAD_REQUEST);
-            }
-        }).toList();
+        return messages.stream()
+            .map(obj -> {
+                try {
+                    // ✅ JSON 문자열을 ChatMessageDto로 변환
+                    return objectMapper.readValue(obj.toString(), ChatMessageDto.class);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                    return null; // 변환 실패한 경우 null 반환
+                }
+            })
+            .filter(msg -> msg != null) // 변환 실패한 메시지는 필터링
+            .collect(Collectors.toList());
     }
+
+
+
+
+
 }

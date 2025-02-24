@@ -9,6 +9,7 @@ import com.myproject.community.api.auth.jwt.JwtProvider;
 import com.myproject.community.api.auth.jwt.TokenInfo;
 import com.myproject.community.api.auth.service.auth.AuthService;
 import com.myproject.community.api.auth.service.email.EmailService;
+import com.myproject.community.api.member.dto.MemberResponseDto;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -46,17 +47,13 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<?> getCurrentUser(Authentication authentication) {
+    public ResponseEntity<?> getCurrentUser(Authentication authentication, HttpServletRequest request) {
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
-        String role = authentication.getAuthorities()
-            .stream()
-            .findFirst()
-            .map(GrantedAuthority::getAuthority)
-            .orElse("ROLE_USER");
+        MemberResponseDto memberResponse = authService.getMemberResponse(request);
         // authentication.getPrinipal()에는 사용자의 상세 정보가 들어있음.
-        return ResponseEntity.ok(role);
+        return ResponseEntity.ok(memberResponse);
     }
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {

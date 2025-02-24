@@ -59,9 +59,9 @@ public class Member {
     }
 
     public void updateMember(String name, String nickName, LocalDate birthday) {
-        this.nickName = nickName;
-        this.name = name;
-        this.birthday = birthday;
+        this.nickName = nickName != null ? nickName : this.nickName;
+        this.name = name != null ? name : this.name;
+        this.birthday = birthday != null ? birthday : this.birthday;
     }
 
 
