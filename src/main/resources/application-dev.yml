@@ -1,10 +1,11 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:testdb
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
+    url: jdbc:postgresql://3.133.136.105:5432/ontheit
+    username: ontheit
+    password: andcl12@
+    driver-class-name: org.postgresql.Driver
+
+MALE_HOST: smtp.gmail.com
+MALE_PORT: 587
+MALE_USERNAME: tlswlfk@gmail.com
+MALE_PASSWORD: prlmoepesmdmmdhq
