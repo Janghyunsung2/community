@@ -23,41 +23,42 @@ jobs:
       - name: Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no ontheit@${{ secrets.EC2_HOST }} << 'EOF'
-
+          
           # 1. 필수 패키지 업데이트 및 Docker 설치 확인
           sudo yum update -y
           sudo yum install -y git docker
           sudo systemctl start docker
           sudo systemctl enable docker
-
-          # Docker 그룹 추가 (이미 추가된 경우 생략 가능)
+          
+          # Docker 그룹 추가하여 sudo 없이 실행 가능하도록 설정
           sudo usermod -aG docker ontheit
-
-          # 2. Git Clone (HTTPS 방식으로 변경)
+          sudo systemctl restart docker
+          
+          # 2. Git Clone (SSH 방식으로 변경)
           cd /home/ontheit || exit
-
+          
           if [ ! -d "app" ]; then
-            git clone git@githun:janghyunsung2/community.git app
+            git clone git@github.com:YOUR_GITHUB_USERNAME/YOUR_REPO.git app || exit 1
           fi
-
+          
           cd app
           git checkout main
           git pull origin main
-
+          
           # 3. Maven 빌드
           chmod +x mvnw
           ./mvnw clean package -DskipTests
-
+          
           # 4. 기존 Docker 컨테이너 중지 및 삭제 (새로운 배포 시 문제 방지)
-          docker stop backend-container || true
-          docker rm backend-container || true
-          docker rmi my-backend-image || true
-
+          sudo docker stop backend-container || true
+          sudo docker rm backend-container || true
+          sudo docker rmi my-backend-image || true
+          
           # 5. Docker 이미지 빌드
-          docker build -t my-backend-image .
-
+          sudo docker build -t my-backend-image .
+          
           # 6. 새 컨테이너 실행 (기존 컨테이너 있으면 자동 삭제)
-          docker run -d --name backend-container -p 8080:8080 \
+          sudo docker run -d --name backend-container -p 8080:8080 \
             --restart always \
             -e DB_URL=${{ secrets.DB_URL }} \
             -e DB_USERNAME=${{ secrets.DB_USERNAME }} \
@@ -67,5 +68,5 @@ jobs:
             -e SPRING_MAIL_USERNAME=${{ secrets.SPRING_MAIL_USERNAME }} \
             -e SPRING_MAIL_PASSWORD=${{ secrets.SPRING_MAIL_PASSWORD }} \
             my-backend-image
-
+          
           EOF
