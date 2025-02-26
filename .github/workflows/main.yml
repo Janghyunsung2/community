@@ -37,7 +37,7 @@ jobs:
           cd /home/ontheit || exit
 
           if [ ! -d "app" ]; then
-            git clone https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPO.git app
+            git clone git@githun:janghyunsung2/community.git app
           fi
 
           cd app
