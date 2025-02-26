@@ -3,7 +3,7 @@ name: CI/CD for Spring Boot with Docker
 on:
   push:
     branches:
-      - main  # main 브랜치에 Push되면 실행
+      - main  # main 브랜치에 Push될 때 실행
 
 jobs:
   deploy:
@@ -30,10 +30,11 @@ jobs:
           sudo systemctl start docker
           sudo systemctl enable docker
 
-          # 2. 프로젝트 디렉토리 설정
+          # 2. Git Clone (SSH 방식으로 변경!)
           cd /home/ec2-user || exit
+          
           if [ ! -d "app" ]; then
-            git clone https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPO.git app
+            git clone git@github.com:YOUR_GITHUB_USERNAME/YOUR_REPO.git app
           fi
           
           cd app
