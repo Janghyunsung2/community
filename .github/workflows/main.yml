@@ -1,0 +1,66 @@
+name: CI/CD for Spring Boot with Docker
+
+on:
+  push:
+    branches:
+      - main  # main 브랜치에 push될 때 실행
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to EC2
+        run: |
+          ssh ec2-user@${{ secrets.EC2_HOST }} << 'EOF'
+          
+          # 1. Docker 설치 확인 및 업데이트
+          sudo yum update -y
+          sudo yum install -y docker
+          sudo systemctl start docker
+          sudo systemctl enable docker
+
+          # 2. 기존 컨테이너 중지 및 삭제
+          sudo docker stop backend-container || true
+          sudo docker rm backend-container || true
+          sudo docker rmi my-backend-image || true
+
+          # 3. 환경 변수 설정 (GitHub Secrets에서 가져오기)
+          export DB_URL=${{ secrets.DB_URL }}
+          export DB_USERNAME=${{ secrets.DB_USERNAME }}
+          export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          export SPRING_MAIL_HOST=${{ secrets.SPRING_MAIL_HOST }}
+          export SPRING_MAIL_PORT=${{ secrets.SPRING_MAIL_PORT }}
+          export SPRING_MAIL_USERNAME=${{ secrets.SPRING_MAIL_USERNAME }}
+          export SPRING_MAIL_PASSWORD=${{ secrets.SPRING_MAIL_PASSWORD }}
+
+          # 4. 최신 코드 pull
+          cd /home/ec2-user/app
+          git pull origin main
+          
+          # 5. 프로젝트 빌드
+          ./mvnw clean package -DskipTests
+
+          # 6. Docker 이미지 빌드 및 실행
+          sudo docker build -t my-backend-image .
+          sudo docker run -d --name backend-container -p 8080:8080 \
+            -e DB_URL=$DB_URL \
+            -e DB_USERNAME=$DB_USERNAME \
+            -e DB_PASSWORD=$DB_PASSWORD \
+            -e SPRING_MAIL_HOST=$SPRING_MAIL_HOST \
+            -e SPRING_MAIL_PORT=$SPRING_MAIL_PORT \
+            -e SPRING_MAIL_USERNAME=$SPRING_MAIL_USERNAME \
+            -e SPRING_MAIL_PASSWORD=$SPRING_MAIL_PASSWORD \
+            my-backend-image
+
+          EOF

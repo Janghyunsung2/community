@@ -73,7 +73,7 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.saveAndFlush(member);
         accountRepository.save(account);
 
-        log.info("회원가입 성공");
+        log.debug("회원가입 성공");
 
     }
 
@@ -87,7 +87,7 @@ public class MemberServiceImpl implements MemberService {
     public MemberAuthDto getAuthMember(long memberId) {
 
         Account account = accountRepository.findById(memberId)
-            .orElseThrow(() -> new CustomException(ErrorCode.QUIT_ACCOUNT));
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
         MemberAccount memberAccount = new MemberAccount(account.getUsername(),
             account.getPassword());
         return new MemberAuthDto(memberId, memberAccount, account.getRole());
@@ -98,7 +98,7 @@ public class MemberServiceImpl implements MemberService {
     public long getMemberIdByUsername(String loginId) {
         Long memberId = memberRepository.findByUserLoginId(loginId);
         if(memberId == null) {
-            throw new CustomException(ErrorCode.QUIT_ACCOUNT);
+            throw new CustomException(ErrorCode.MEMBER_NOT_FOUND);
         }
         return memberId;
     }
@@ -107,7 +107,7 @@ public class MemberServiceImpl implements MemberService {
     public void updateMember(MemberUpdateDto dto, HttpServletRequest request) {
         long memberId = jwtProvider.getAuthUserId(request);
         Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new CustomException(ErrorCode.QUIT_ACCOUNT));
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         member.updateMember(dto.getName(), dto.getNickname(), dto.getBirthday());
 
