@@ -22,15 +22,12 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public void saveRootCategory(CategoryDto categoryDto){
         boolean isDuplicate = categoryRepository.findByName(categoryDto.getName()).isPresent();
-        if(isDuplicate){
-            throw new CustomException(ErrorCode.CATEGORY_NAME_DUPLICATE);
+        if(!isDuplicate){
+            Category category = Category.builder()
+                .name(categoryDto.getName()).build();
+            category.updateDisplayOrder(categoryDto.getDisplayOrder());
+            categoryRepository.save(category);
         }
-
-        Category category = Category.builder()
-            .name(categoryDto.getName()).build();
-        category.updateDisplayOrder(categoryDto.getDisplayOrder());
-        categoryRepository.save(category);
-
     }
 
     @Override

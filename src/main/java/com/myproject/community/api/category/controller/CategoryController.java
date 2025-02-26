@@ -6,6 +6,7 @@ import com.myproject.community.api.category.service.CategoryService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,7 +28,7 @@ public class CategoryController {
     }
 
     @PostMapping("/api/admin/categories")
-    public ResponseEntity<?> createCategory(@RequestBody CategoryDto categoryDto) {
+    public ResponseEntity<?> createCategory(@Validated @RequestBody CategoryDto categoryDto) {
         categoryService.saveRootCategory(categoryDto);
         return ResponseEntity.ok().build();
     }
