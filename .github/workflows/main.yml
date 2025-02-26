@@ -35,7 +35,7 @@ jobs:
           newgrp docker
 
           # 2. Git Clone (HTTPS 방식으로 변경)
-          cd /home/ec2-user || exit
+          cd /home/ontheit || exit
           
           if [ ! -d "app" ]; then
             git clone https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPO.git app
