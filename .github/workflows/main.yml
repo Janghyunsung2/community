@@ -64,9 +64,9 @@ jobs:
             -e DB_URL=${{ secrets.DB_URL }} \
             -e DB_USERNAME=${{ secrets.DB_USERNAME }} \
             -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-            -e SPRING_MAIL_HOST=${{ secrets.SPRING_MAIL_HOST }} \
-            -e SPRING_MAIL_PORT=${{ secrets.SPRING_MAIL_PORT }} \
-            -e SPRING_MAIL_USERNAME=${{ secrets.SPRING_MAIL_USERNAME }} \
-            -e SPRING_MAIL_PASSWORD=${{ secrets.SPRING_MAIL_PASSWORD }} \
+            -e SPRING_MAIL_HOST=${{ secrets.MAIL_HOST }} \
+            -e SPRING_MAIL_PORT=${{ secrets.MAIL_PORT }} \
+            -e SPRING_MAIL_USERNAME=${{ secrets.MAIL_USERNAME }} \
+            -e SPRING_MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }} \
             my-backend-image
           EOF
