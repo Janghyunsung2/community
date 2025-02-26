@@ -30,17 +30,16 @@ jobs:
           sudo systemctl start docker
           sudo systemctl enable docker
 
-          # Docker 그룹 추가하여 sudo 없이 실행 가능하도록 설정
-          sudo usermod -aG docker ec2-user
-          newgrp docker
+          # Docker 그룹 추가 (이미 추가된 경우 생략 가능)
+          sudo usermod -aG docker ontheit
 
           # 2. Git Clone (HTTPS 방식으로 변경)
           cd /home/ontheit || exit
-          
+
           if [ ! -d "app" ]; then
             git clone https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPO.git app
           fi
-          
+
           cd app
           git checkout main
           git pull origin main
