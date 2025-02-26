@@ -22,19 +22,23 @@ jobs:
 
       - name: Deploy to EC2
         run: |
-          ssh ontheit@${{ secrets.EC2_HOST }} << 'EOF'
-          
+          ssh -o StrictHostKeyChecking=no ontheit@${{ secrets.EC2_HOST }} << 'EOF'
+
           # 1. 필수 패키지 업데이트 및 Docker 설치 확인
           sudo yum update -y
           sudo yum install -y git docker
           sudo systemctl start docker
           sudo systemctl enable docker
 
-          # 2. Git Clone (SSH 방식으로 변경!)
+          # Docker 그룹 추가하여 sudo 없이 실행 가능하도록 설정
+          sudo usermod -aG docker ec2-user
+          newgrp docker
+
+          # 2. Git Clone (HTTPS 방식으로 변경)
           cd /home/ec2-user || exit
           
           if [ ! -d "app" ]; then
-            git clone git@github.com:YOUR_GITHUB_USERNAME/YOUR_REPO.git app
+            git clone https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPO.git app
           fi
           
           cd app
@@ -45,16 +49,17 @@ jobs:
           chmod +x mvnw
           ./mvnw clean package -DskipTests
 
-          # 4. 기존 Docker 컨테이너 중지 및 삭제
-          sudo docker stop backend-container || true
-          sudo docker rm backend-container || true
-          sudo docker rmi my-backend-image || true
+          # 4. 기존 Docker 컨테이너 중지 및 삭제 (새로운 배포 시 문제 방지)
+          docker stop backend-container || true
+          docker rm backend-container || true
+          docker rmi my-backend-image || true
 
           # 5. Docker 이미지 빌드
-          sudo docker build -t my-backend-image .
+          docker build -t my-backend-image .
 
-          # 6. 새 컨테이너 실행
-          sudo docker run -d --name backend-container -p 8080:8080 \
+          # 6. 새 컨테이너 실행 (기존 컨테이너 있으면 자동 삭제)
+          docker run -d --name backend-container -p 8080:8080 \
+            --restart always \
             -e DB_URL=${{ secrets.DB_URL }} \
             -e DB_USERNAME=${{ secrets.DB_USERNAME }} \
             -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
