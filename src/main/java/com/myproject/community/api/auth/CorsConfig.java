@@ -21,7 +21,9 @@ public class CorsConfig {
                     )
                     .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                     .allowedHeaders("*")
-                    .allowCredentials(true);
+                    .allowCredentials(true)
+                    .maxAge(3600); // ✅ OPTIONS 프리플라이트 요청을 1시간 동안 캐싱하여 성능 향상
+
             }
 
 
