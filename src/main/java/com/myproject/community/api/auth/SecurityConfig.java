@@ -47,6 +47,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            .cors(Customizer.withDefaults())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/**").permitAll()
                 .requestMatchers("/ws-chat/**").permitAll()
@@ -54,7 +55,6 @@ public class SecurityConfig {
                 .requestMatchers("/h2-console/**").hasRole("ADMIN")
 
             )
-
             .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)) // ✅ iframe 허용
             .csrf(CsrfConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
