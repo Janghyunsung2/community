@@ -5,6 +5,11 @@ server:
 spring:
   profiles:
     active: dev
+  data:
+    redis:
+      port: 6379
+      password: ""
+      host: 127.0.0.1
   jpa:
     hibernate:
       ddl-auto: update
