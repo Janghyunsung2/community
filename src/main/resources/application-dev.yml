@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://18.117.117.125:5432/community
+    url: jdbc:postgresql://18.189.11.17:5432/community
     username: ontheit
     password: gustjd12@
     driver-class-name: org.postgresql.Driver
