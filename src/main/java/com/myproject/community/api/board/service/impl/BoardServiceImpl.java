@@ -29,8 +29,8 @@ public class BoardServiceImpl implements BoardService {
 
     @Transactional
     public void createBoard(BoardWithCategoryDto boardWithCategoryDto) {
-        if (isDuplicateBoardTitle(boardWithCategoryDto.getTitle())) {
-            throw new CustomException(ErrorCode.BOARD_TITLE_DUPLICATE);
+        if (Boolean.TRUE.equals(isDuplicateBoardTitle(boardWithCategoryDto.getTitle()))) {
+            return;
         }
         Board board = Board.builder()
             .title(boardWithCategoryDto.getTitle())
