@@ -4,8 +4,12 @@ spring:
     username: ontheit
     password: gustjd12@
     driver-class-name: org.postgresql.Driver
+server:
+  port: 433
+  address: www.ontheit.site
 
 MALE_HOST: smtp.gmail.com
 MALE_PORT: 587
 MALE_USERNAME: tlswlfk@gmail.com
 MALE_PASSWORD: prlmoepesmdmmdhq
+
