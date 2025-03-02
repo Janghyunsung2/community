@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://3.133.136.105:5432/ontheit
+    url: jdbc:postgresql://18.117.117.125:5432/community
     username: ontheit
-    password: andcl12@
+    password: gustjd12@
     driver-class-name: org.postgresql.Driver
 
 MALE_HOST: smtp.gmail.com
