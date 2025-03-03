@@ -41,7 +41,7 @@ public class AuthController {
     private final JwtProvider jwtProvider;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody MemberLoginDto loginDto, HttpServletResponse response) {
+    public ResponseEntity<?> login(@RequestBody @Validated MemberLoginDto loginDto, HttpServletResponse response) {
         log.debug("로그인 요청데이터 ----- {}", loginDto);
         authService.authenticate(loginDto, response);
 
