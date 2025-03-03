@@ -12,8 +12,10 @@ spring:
 server:
   port: 8080
   address: 0.0.0.0
-
 MALE_HOST: smtp.gmail.com
 MALE_PORT: 587
 MALE_USERNAME: tlswlfk@gmail.com
 MALE_PASSWORD: prlmoepesmdmmdhq
+logging:
+  level:
+    root: debug
