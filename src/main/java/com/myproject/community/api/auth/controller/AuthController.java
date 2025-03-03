@@ -40,7 +40,7 @@ public class AuthController {
     private final CookieUtil cookieUtil;
     private final JwtProvider jwtProvider;
 
-    @PostMapping("/login")
+    @PostMapping(value = "/login", consumes = "application/json")
     public ResponseEntity<?> login(@RequestBody @Validated MemberLoginDto loginDto, HttpServletResponse response) {
         log.debug("로그인 요청데이터 ----- {}", loginDto);
         authService.authenticate(loginDto, response);
