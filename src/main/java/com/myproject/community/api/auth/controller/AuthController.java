@@ -39,7 +39,7 @@ public class AuthController {
     private final JwtProvider jwtProvider;
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@Validated @RequestBody MemberLoginDto loginDto, HttpServletResponse response) {
+    public ResponseEntity<?> login(@Validated @RequestBody MemberLoginDto loginDto, HttpServletResponse response) {
 
         authService.authenticate(loginDto, response);
 

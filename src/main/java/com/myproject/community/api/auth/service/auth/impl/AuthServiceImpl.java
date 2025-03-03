@@ -17,12 +17,14 @@ import com.myproject.community.error.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -36,9 +38,12 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public TokenInfo authenticate(MemberLoginDto memberLoginDto, HttpServletResponse response) {
+        log.debug("로그인 요청 데이터: {}", memberLoginDto );
+
         authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(memberLoginDto.getUsername(),
                 memberLoginDto.getPassword()));
+
 
         MemberAuthDto authMember = getAuthMember(memberService.getMemberIdByUsername(memberLoginDto.getUsername()));
 
