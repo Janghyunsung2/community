@@ -17,7 +17,9 @@ public class CorsConfig {
                     .allowedOrigins(
                         "http://localhost:3000",
                         "http://18.189.11.17:3000",
-                        "https://www.ontheit.site"
+                        "https://www.ontheit.site",
+                        "http://18.189.11.17:8080",
+                        "http://localhost:8080"
                     )
                     .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                     .allowedHeaders("*")
