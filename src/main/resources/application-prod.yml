@@ -18,4 +18,5 @@ MALE_USERNAME: tlswlfk@gmail.com
 MALE_PASSWORD: prlmoepesmdmmdhq
 logging:
   level:
-    root: debug
+    org.springframework.web: debug
+    org.springframework.http.converter: debug
