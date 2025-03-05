@@ -1,5 +1,9 @@
-package com.myproject.community.api.post;
+package com.myproject.community.api.post.service;
 
+import com.myproject.community.api.post.dto.PostUpdateDto;
+import com.myproject.community.api.post.dto.PostWithBoardDto;
+import com.myproject.community.api.post.dto.PostDetailDto;
+import com.myproject.community.api.post.dto.PostListDto;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +20,6 @@ public interface PostService {
     void deletePost(long postId);
     void deleteAdminPost(long postId);
 
-    Page<PostListDto> getPostAll(Pageable pageable);
+    Page<PostListDto> getPostsByKeyword(String keyword, Pageable pageable);
 
 }

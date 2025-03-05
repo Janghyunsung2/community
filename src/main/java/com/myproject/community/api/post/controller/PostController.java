@@ -1,5 +1,10 @@
-package com.myproject.community.api.post;
+package com.myproject.community.api.post.controller;
 
+import com.myproject.community.api.post.dto.PostDetailDto;
+import com.myproject.community.api.post.dto.PostListDto;
+import com.myproject.community.api.post.service.PostService;
+import com.myproject.community.api.post.dto.PostUpdateDto;
+import com.myproject.community.api.post.dto.PostWithBoardDto;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -31,9 +36,9 @@ public class PostController {
         return ResponseEntity.ok(postService.getPosts(boardId, pageable));
     }
 
-    @GetMapping("/api/admin/posts")
-    public ResponseEntity<Page<PostListDto>> getAdminPosts(Pageable pageable){
-        return ResponseEntity.ok(postService.getPostAll(pageable));
+    @GetMapping("/api/admin/posts/search")
+    public ResponseEntity<Page<PostListDto>> getAdminPosts(@RequestParam String keyword, Pageable pageable){
+        return ResponseEntity.ok(postService.getPostsByKeyword(keyword, pageable));
     }
 
     @DeleteMapping("/api/admin/posts")
