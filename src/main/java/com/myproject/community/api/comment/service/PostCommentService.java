@@ -17,7 +17,8 @@ public interface PostCommentService {
 
     void deletePostCommenMember(long commentId);
 
-    Page<PostCommentResponseDto> getCommentAll(Pageable pageable);
+
+    Page<PostCommentResponseDto> getCommentByKeyword(String keyword, Pageable pageable);
 
     void deletePostCommentAdmin(long commentId);
 

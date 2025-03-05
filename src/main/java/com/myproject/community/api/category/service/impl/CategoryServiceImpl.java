@@ -25,6 +25,7 @@ public class CategoryServiceImpl implements CategoryService {
         if(!isDuplicate){
             Category category = Category.builder()
                 .name(categoryDto.getName()).build();
+
             category.updateDisplayOrder(categoryDto.getDisplayOrder());
             categoryRepository.save(category);
         }

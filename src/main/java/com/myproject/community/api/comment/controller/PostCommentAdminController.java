@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class PostCommentAdminController {
     private final PostCommentService postCommentService;
 
-    @GetMapping
-    public ResponseEntity<?> getPostComments(Pageable pageable) {
-        return ResponseEntity.ok(postCommentService.getCommentAll(pageable));
+    @GetMapping("/search")
+    public ResponseEntity<?> getPostComments(@RequestParam String keyword, Pageable pageable) {
+        return ResponseEntity.ok(postCommentService.getCommentByKeyword(keyword, pageable));
     }
 
     @DeleteMapping

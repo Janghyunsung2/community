@@ -30,12 +30,17 @@ public class AdminInitializer implements CommandLineRunner {
         if(accountRepository.findByUsername("admin").isEmpty()) {
             MemberStatus memberStatus = MemberStatus.builder().status(Status.ACTIVE).build();
             memberStatusRepository.save(memberStatus);
-            Member member = Member.builder().nickName("관리자").memberStatus(memberStatus).build();
+            Member adminMember = Member.builder().nickName("관리자").memberStatus(memberStatus).build();
+            Member member = Member.builder().nickName("유저").memberStatus(memberStatus).build();
 
             Account admin = Account.builder().username("admin")
-                .password(passwordEncoder.encode("1234")).role(Role.ADMIN).member(member).build();
+                .password(passwordEncoder.encode("1234")).role(Role.ADMIN).member(adminMember).build();
+            Account memberAccount = Account.builder().username("user")
+                .password(passwordEncoder.encode("1234")).role(Role.MEMBER).member(member).build();
             memberRepository.save(member);
+            memberRepository.save(adminMember);
             accountRepository.save(admin);
+            accountRepository.save(memberAccount);
         }
     }
 }

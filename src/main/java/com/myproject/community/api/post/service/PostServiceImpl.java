@@ -1,9 +1,13 @@
-package com.myproject.community.api.post;
+package com.myproject.community.api.post.service;
 
 import com.myproject.community.api.auth.jwt.JwtProvider;
 import com.myproject.community.api.board.repository.BoardRepository;
 import com.myproject.community.api.image.PostImageService;
 import com.myproject.community.api.member.repository.MemberRepository;
+import com.myproject.community.api.post.dto.PostUpdateDto;
+import com.myproject.community.api.post.dto.PostWithBoardDto;
+import com.myproject.community.api.post.dto.PostDetailDto;
+import com.myproject.community.api.post.dto.PostListDto;
 import com.myproject.community.api.post.repository.PostRepository;
 import com.myproject.community.domain.board.Board;
 import com.myproject.community.domain.member.Member;
@@ -99,10 +103,10 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Page<PostListDto> getPostAll(Pageable pageable) {
-        Page<PostListDto> postAll = postRepository.getPostAll(pageable);
-        postAll.getContent().forEach(postListDto -> postListDto.setViews(getPostViewCount(postListDto.getPostId())));
-        return postAll;
+    public Page<PostListDto> getPostsByKeyword(String keyword, Pageable pageable) {
+        Page<PostListDto> posts = postRepository.findPostsByKeyword(keyword, pageable);
+        posts.getContent().forEach(postListDto -> postListDto.setViews(getPostViewCount(postListDto.getPostId())));
+        return posts;
     }
 
     private Post findPostById(long postId) {

@@ -1,14 +1,13 @@
 package com.myproject.community.api.post.repository.querydsl.impl;
 
-import com.myproject.community.api.post.PostDetailDto;
-import com.myproject.community.api.post.PostListDto;
+import com.myproject.community.api.post.dto.PostDetailDto;
+import com.myproject.community.api.post.dto.PostListDto;
 import com.myproject.community.api.post.QPostDetailDto;
 import com.myproject.community.api.post.QPostListDto;
 import com.myproject.community.api.post.repository.querydsl.PostRepositoryCustom;
 import com.myproject.community.domain.board.QBoard;
 import com.myproject.community.domain.image.QImage;
 import com.myproject.community.domain.member.QMember;
-import com.myproject.community.domain.post.PostLike;
 import com.myproject.community.domain.post.PostStatus;
 import com.myproject.community.domain.post.QPost;
 import com.myproject.community.domain.post.QPostImage;

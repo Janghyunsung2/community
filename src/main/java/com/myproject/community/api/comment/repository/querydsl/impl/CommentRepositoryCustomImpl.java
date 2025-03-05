@@ -98,7 +98,7 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
         return result;
     }
 
-    public Page<PostCommentResponseDto> getPostCommentsAll(Pageable pageable) {
+    public Page<PostCommentResponseDto> getPostCommentsByKeyword(String keyword, Pageable pageable) {
         QPost qPost = QPost.post;
         QPostComment qPostComment = QPostComment.postComment;
         QComment qComment = QComment.comment;
@@ -116,6 +116,7 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
             .limit(pageable.getPageSize())
             .orderBy(QuerydslUtils.getOrderSpecifiers(pageable, entityPath)
                 .toArray(new OrderSpecifier[0]))
+            .where(qComment.content.contains(keyword).or(qMember.nickName.contains(keyword)))
             .fetch();
 
         Long total = queryFactory

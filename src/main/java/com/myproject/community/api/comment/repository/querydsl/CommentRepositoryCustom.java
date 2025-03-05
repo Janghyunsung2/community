@@ -9,5 +9,5 @@ import org.springframework.data.domain.Pageable;
 public interface CommentRepositoryCustom{
     List<PostCommentResponseGroupDto> findCommentByPostId(Long postId);
 
-    Page<PostCommentResponseDto> getPostCommentsAll(Pageable pageable);
+    Page<PostCommentResponseDto> getPostCommentsByKeyword(String keyword, Pageable pageable);
 }
