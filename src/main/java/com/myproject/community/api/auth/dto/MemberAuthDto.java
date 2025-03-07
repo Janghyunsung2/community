@@ -2,12 +2,14 @@ package com.myproject.community.api.auth.dto;
 
 import com.myproject.community.domain.account.Role;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class MemberAuthDto {
 
     private long userId;

@@ -1,7 +1,9 @@
 package com.myproject.community.api.board.repository.queydsl.impl;
 
+import com.myproject.community.api.board.dto.BoardAdminDto;
 import com.myproject.community.api.board.dto.BoardDto;
 import com.myproject.community.api.board.dto.BoardMainDto;
+import com.myproject.community.api.board.dto.QBoardAdminDto;
 import com.myproject.community.api.board.dto.QBoardDto;
 import com.myproject.community.api.board.dto.QBoardMainDto;
 import com.myproject.community.api.board.repository.queydsl.BoardRepositoryCustom;
@@ -45,12 +47,16 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
     }
 
     @Override
-    public Page<BoardDto> getBoardByAdminPage(Pageable pageable) {
+    public Page<BoardAdminDto> getBoardByAdminPage(Pageable pageable) {
         QBoard qBoard = QBoard.board;
+        QCategoryBoard qCategoryBoard = QCategoryBoard.categoryBoard;
+        QCategory category = QCategory.category;
         // 기본 쿼리 생성
-        JPAQuery<BoardDto> query = queryFactory.select(
-                new QBoardDto(qBoard.id, qBoard.title, qBoard.description, qBoard.active))
-            .from(qBoard);
+        JPAQuery<BoardAdminDto> query = queryFactory.select(
+                new QBoardAdminDto(qBoard.id, qBoard.title, qBoard.description, qBoard.active, category.name))
+            .from(qBoard)
+            .join(qCategoryBoard).on(qBoard.id.eq(qCategoryBoard.board.id))
+            .join(category).on(qCategoryBoard.category.id.eq(category.id));
 
         // 정렬 적용
         if (pageable.getSort().isSorted()) {
@@ -62,7 +68,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                 ));
             });
         }
-        List<BoardDto> boardDtos = query
+        List<BoardAdminDto> boardDtos = query
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();

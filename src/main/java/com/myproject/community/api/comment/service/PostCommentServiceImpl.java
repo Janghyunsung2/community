@@ -61,7 +61,7 @@ public class PostCommentServiceImpl implements PostCommentService {
     @Transactional
     @Override
     public void deletePostCommenMember(long commentId) {
-        getCommentById(commentId).adminDelete();
+        getCommentById(commentId).isDeleted();
     }
 
     @Transactional
@@ -72,13 +72,14 @@ public class PostCommentServiceImpl implements PostCommentService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<PostCommentResponseDto> getCommentAll(Pageable pageable) {
-        return commentRepository.getPostCommentsAll(pageable);
+    public Page<PostCommentResponseDto> getCommentByKeyword(String keyword, Pageable pageable) {
+        return commentRepository.getPostCommentsByKeyword(keyword, pageable);
     }
 
+    @Transactional
     @Override
     public void deletePostCommentAdmin(long commentId) {
-
+        getCommentById(commentId).adminDelete();
     }
 
     private Comment getCommentById(long commentId){

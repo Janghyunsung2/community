@@ -1,4 +1,4 @@
-package com.myproject.community.api.post;
+package com.myproject.community.api.post.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
 import java.time.LocalDateTime;
