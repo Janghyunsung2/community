@@ -42,25 +42,25 @@ public class PostController {
     }
 
     @DeleteMapping("/api/admin/posts")
-    public ResponseEntity<?> deleteAdminPost(@RequestParam long id){
-        postService.deleteAdminPost(id);
+    public ResponseEntity<?> deleteAdminPost(@RequestParam long id, HttpServletRequest request){
+        postService.deleteAdminPost(id, request);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/api/posts/{postId}")
-    public ResponseEntity<PostDetailDto> getPost(@PathVariable long postId){
-        return ResponseEntity.ok(postService.getPostDetail(postId));
+    public ResponseEntity<PostDetailDto> getPost(@PathVariable long postId, HttpServletRequest request){
+        return ResponseEntity.ok(postService.getPostDetail(postId, request));
     }
 
     @PutMapping("/api/posts/{postId}")
-    public ResponseEntity<Void> updatePost(@PathVariable long postId, @RequestBody PostUpdateDto postUpdateDto){
-        postService.updatePost(postId ,postUpdateDto);
+    public ResponseEntity<Void> updatePost(@PathVariable long postId, @RequestBody PostUpdateDto postUpdateDto, HttpServletRequest request){
+        postService.updatePost(postId ,postUpdateDto, request);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/api/posts/{postId}")
-    public ResponseEntity<Void> deletePost(@PathVariable long postId){
-        postService.deletePost(postId);
+    public ResponseEntity<Void> deletePost(@PathVariable long postId, HttpServletRequest request){
+        postService.deletePost(postId, request);
         return ResponseEntity.ok().build();
     }
 
