@@ -1,5 +1,6 @@
 package com.myproject.community.api.post.service;
 
+import com.myproject.community.api.account.AccountRepository;
 import com.myproject.community.api.auth.jwt.JwtProvider;
 import com.myproject.community.api.board.repository.BoardRepository;
 import com.myproject.community.api.image.PostImageService;
@@ -9,6 +10,8 @@ import com.myproject.community.api.post.dto.PostWithBoardDto;
 import com.myproject.community.api.post.dto.PostDetailDto;
 import com.myproject.community.api.post.dto.PostListDto;
 import com.myproject.community.api.post.repository.PostRepository;
+import com.myproject.community.domain.account.Account;
+import com.myproject.community.domain.account.Role;
 import com.myproject.community.domain.board.Board;
 import com.myproject.community.domain.member.Member;
 import com.myproject.community.domain.post.Post;
@@ -16,6 +19,7 @@ import com.myproject.community.error.CustomException;
 import com.myproject.community.error.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,12 +40,13 @@ public class PostServiceImpl implements PostService {
     private final RedisTemplate<String, String> redisTemplate;
 
     private static final String VIEW_COUNT_PREFIX = "post:view:";
+    private final AccountRepository accountRepository;
 
 
     @Transactional
     public void createPost(long boardId, PostWithBoardDto postWithBoardDto, HttpServletRequest request) {
 
-        long authUserId = jwtProvider.getAuthUserId(request);
+        long authUserId = getTokenMemberId(request);
 
         Member member = memberRepository.findById(authUserId)
             .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
@@ -75,9 +80,9 @@ public class PostServiceImpl implements PostService {
     }
 
     @Transactional(readOnly = true)
-    public PostDetailDto getPostDetail(long postId) {
+    public PostDetailDto getPostDetail(long postId, HttpServletRequest request) {
         PostDetailDto postById = postRepository.findPostById(postId);
-        Long viewCount = postViewCount(postId);
+        Long viewCount = postViewCount(postId, request);
         if(viewCount > 0) {
             postById.setViewCount(viewCount);
         }
@@ -85,21 +90,42 @@ public class PostServiceImpl implements PostService {
     }
 
     @Transactional
-    public void updatePost(long postId, PostUpdateDto postUpdateDto) {
+    public void updatePost(long postId, PostUpdateDto postUpdateDto, HttpServletRequest request) {
+        Long memberId = getTokenMemberId(request);
+        Member member = getMemberById(memberId);
+
         Post post = findPostById(postId);
-        post.update(postUpdateDto.getTitle(), postUpdateDto.getContent());
+        if(isSameMember(member, post)) {
+            post.update(postUpdateDto.getTitle(), postUpdateDto.getContent());
+        }else {
+            throw new CustomException(ErrorCode.FORBIDDEN);
+        }
     }
 
     @Transactional
-    public void deletePost(long postId) {
+    public void deletePost(long postId, HttpServletRequest request) {
         Post post = findPostById(postId);
-        post.authorDelete();
+        Long memberId = getTokenMemberId(request);
+        Member member = getMemberById(memberId);
+        if(isSameMember(member, post)) {
+            post.authorDelete();
+        }else {
+            throw new CustomException(ErrorCode.FORBIDDEN);
+        }
     }
 
     @Transactional
-    public void deleteAdminPost(long postId) {
+    public void deleteAdminPost(long postId, HttpServletRequest request) {
         Post post = findPostById(postId);
-        post.authorDelete();
+        long adminId = getTokenMemberId(request);
+        Account account = accountRepository.findById(adminId)
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        Role role = account.getRole();
+        if(role.equals(Role.ADMIN)) {
+            post.authorDelete();
+        }else {
+            throw new CustomException(ErrorCode.FORBIDDEN);
+        }
     }
 
     @Override
@@ -114,9 +140,19 @@ public class PostServiceImpl implements PostService {
             .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
     }
 
-    private Long postViewCount(long postId) {
+    private Long postViewCount(long postId, HttpServletRequest request) {
+        String clientIp = getClientIp(request);
+        String viewCountKey = VIEW_COUNT_PREFIX + postId + ":" + clientIp;
         String redisKey = VIEW_COUNT_PREFIX + postId;
-        return redisTemplate.opsForValue().increment(redisKey);
+
+        if(Boolean.FALSE.equals(redisTemplate.hasKey(viewCountKey))) {
+            Long viewCount = redisTemplate.opsForValue().increment(redisKey);
+            redisTemplate.opsForValue().set(viewCountKey, "true", 1, TimeUnit.DAYS);
+            return viewCount;
+        }
+        String viewCountStr = redisTemplate.opsForValue().get(redisKey);
+        Long viewCount = viewCountStr != null ? Long.parseLong(viewCountStr) : 0L;
+        return viewCount;
     }
 
     private Long getPostViewCount(long postId) {
@@ -126,6 +162,27 @@ public class PostServiceImpl implements PostService {
             return Long.parseLong(viewCount);
         }
         return 0L;
+    }
+
+    private boolean isSameMember(Member member, Post post) {
+        return post.getMember().equals(member);
+    }
+
+    private Member getMemberById(long memberId) {
+        return memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+    }
+
+    private Long getTokenMemberId(HttpServletRequest request) {
+        return jwtProvider.getAuthUserId(request);
+    }
+
+    private String getClientIp(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+        return ip;
+
     }
 
 }
