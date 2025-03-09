@@ -13,12 +13,12 @@ public interface PostService {
 
     Page<PostListDto> getPosts(long boardId, Pageable pageable);
 
-    PostDetailDto getPostDetail(long postId);
+    PostDetailDto getPostDetail(long postId, HttpServletRequest request);
 
-    void updatePost(long postId, PostUpdateDto postUpdateDto);
+    void updatePost(long postId, PostUpdateDto postUpdateDto, HttpServletRequest request);
 
-    void deletePost(long postId);
-    void deleteAdminPost(long postId);
+    void deletePost(long postId, HttpServletRequest request);
+    void deleteAdminPost(long postId, HttpServletRequest request);
 
     Page<PostListDto> getPostsByKeyword(String keyword, Pageable pageable);
 

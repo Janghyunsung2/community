@@ -54,7 +54,7 @@ public class JwtProvider {
         redisTemplate.opsForValue().set(
             JWT_KEY_PREFIX + dto.getUserId(),
             refreshToken,
-            refreshExpirationTime / 1000,  // ✅ 초 단위로 변환
+            refreshExpirationTime / 1000,
             TimeUnit.SECONDS
         );
 
@@ -80,6 +80,7 @@ public class JwtProvider {
         Claims claims = parseClaims(refreshToken);
         String refresh = redisTemplate.opsForValue().get(JWT_KEY_PREFIX + claims.getSubject());
 
+        assert refresh != null;
         if(!refresh.equals(refreshToken)){
             throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
