@@ -6,10 +6,12 @@ import com.myproject.community.api.category.dto.CategoryDto;
 import com.myproject.community.api.category.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@Profile("dev")
 @RequiredArgsConstructor
 public class CategoryInitialize implements CommandLineRunner {
 
