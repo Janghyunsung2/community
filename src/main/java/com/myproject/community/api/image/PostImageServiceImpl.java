@@ -5,6 +5,7 @@ import com.myproject.community.domain.post.Post;
 import com.myproject.community.domain.post.PostImage;
 import com.myproject.community.error.CustomException;
 import com.myproject.community.error.ErrorCode;
+import com.myproject.community.infra.object_storage.ObjectStorage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -20,39 +21,19 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class PostImageServiceImpl implements PostImageService {
 
-    private final String UPLOAD_DIR = "src/main/resources/static/images/";
 
     private final ImageRepository imageRepository;
     private final PostImageRepository postImageRepository;
+    private final ObjectStorage objectStorage;
 
     @Transactional
     public void savePostImages(Post post, List<MultipartFile> images) {
-
-
-        try {
-            for (MultipartFile image : images) {
-                String fileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
-                Path filePath = Paths.get(UPLOAD_DIR + fileName);
-
-                File dir = new File(UPLOAD_DIR);
-                if(!dir.exists()){
-                    dir.mkdirs();
-                }
-
-                image.transferTo(filePath.toFile());
-                Image saveImage = Image.builder().path(fileName).build();
-
-                imageRepository.save(saveImage);
-
-                PostImage postImage = PostImage.builder()
-                    .image(saveImage)
-                    .post(post)
-                    .build();
-
-                postImageRepository.save(postImage);
-            }
-        }catch (IOException e){
-            throw new CustomException(ErrorCode.IMAGE_NOT_FOUND);
+        for (MultipartFile image : images) {
+            String imageUrl = objectStorage.imageUpload(image);
+            Image newImage = Image.builder().path(imageUrl).build();
+            imageRepository.save(newImage);
+            PostImage postImage = PostImage.builder().post(post).image(newImage).build();
+            postImageRepository.save(postImage);
         }
     }
 }
