@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -26,7 +27,7 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping("/api/boards/{boardId}/posts")
-    public ResponseEntity<String> createPost(@PathVariable long boardId, @RequestBody PostWithBoardDto postWithBoardDto, HttpServletRequest request) {
+    public ResponseEntity<String> createPost(@PathVariable long boardId, @RequestPart PostWithBoardDto postWithBoardDto, HttpServletRequest request) {
         postService.createPost(boardId, postWithBoardDto, request);
         return ResponseEntity.ok().build();
     }
@@ -53,7 +54,7 @@ public class PostController {
     }
 
     @PutMapping("/api/posts/{postId}")
-    public ResponseEntity<Void> updatePost(@PathVariable long postId, @RequestBody PostUpdateDto postUpdateDto, HttpServletRequest request){
+    public ResponseEntity<Void> updatePost(@PathVariable long postId, @RequestPart PostUpdateDto postUpdateDto, HttpServletRequest request){
         postService.updatePost(postId ,postUpdateDto, request);
         return ResponseEntity.ok().build();
     }

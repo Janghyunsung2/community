@@ -62,7 +62,7 @@ public class PostServiceImpl implements PostService {
         postRepository.save(post);
         List<MultipartFile> images = postWithBoardDto.getImages();
         if(images != null && !images.isEmpty()) {
-            postImageService.savePostImages(post, postWithBoardDto.getImages());
+            postImageService.savePostImages(post, images);
         }
 
 
@@ -99,6 +99,11 @@ public class PostServiceImpl implements PostService {
             post.update(postUpdateDto.getTitle(), postUpdateDto.getContent());
         }else {
             throw new CustomException(ErrorCode.FORBIDDEN);
+        }
+
+        List<MultipartFile> images = postUpdateDto.getImages();
+        if(images != null && !images.isEmpty()) {
+            postImageService.savePostImages(post, images);
         }
     }
 

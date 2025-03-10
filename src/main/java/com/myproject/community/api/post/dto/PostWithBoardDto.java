@@ -14,7 +14,6 @@ public class PostWithBoardDto {
     private String title;
     private String content;
     private List<MultipartFile> images;
-
     private long authorId;
 
     @Builder
