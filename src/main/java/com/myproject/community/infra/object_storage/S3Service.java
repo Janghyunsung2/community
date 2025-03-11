@@ -18,10 +18,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 @RequiredArgsConstructor
 public class S3Service implements ObjectStorage{
 
-    private final S3Client s3Client = S3Client.builder()
-        .region(Region.AP_NORTHEAST_2)
-        .credentialsProvider(ProfileCredentialsProvider.create())
-        .build();
+    private final S3Client s3Client;
 
     @Value("${S3.bucket.name}")
     private String bucketName;
@@ -38,7 +35,6 @@ public class S3Service implements ObjectStorage{
                     .bucket(bucketName)
                     .key(keyName)
                     .contentType(file.getContentType())
-                    .acl("public-read")
                 .build(),
                 RequestBody.fromInputStream(inputStream, file.getSize())
                 );
