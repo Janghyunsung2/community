@@ -6,6 +6,7 @@ import com.myproject.community.api.post.service.PostService;
 import com.myproject.community.api.post.dto.PostUpdateDto;
 import com.myproject.community.api.post.dto.PostWithBoardDto;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,7 +18,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,7 +29,9 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping("/api/boards/{boardId}/posts")
-    public ResponseEntity<String> createPost(@PathVariable long boardId, @RequestBody PostWithBoardDto postWithBoardDto, HttpServletRequest request) {
+    public ResponseEntity<String> createPost(@PathVariable long boardId, @RequestPart PostWithBoardDto postWithBoardDto,
+        List<MultipartFile> images, HttpServletRequest request) {
+        postWithBoardDto.setImages(images);
         postService.createPost(boardId, postWithBoardDto, request);
         return ResponseEntity.ok().build();
     }
@@ -53,7 +58,7 @@ public class PostController {
     }
 
     @PutMapping("/api/posts/{postId}")
-    public ResponseEntity<Void> updatePost(@PathVariable long postId, @RequestBody PostUpdateDto postUpdateDto, HttpServletRequest request){
+    public ResponseEntity<Void> updatePost(@PathVariable long postId, @RequestPart PostUpdateDto postUpdateDto, HttpServletRequest request){
         postService.updatePost(postId ,postUpdateDto, request);
         return ResponseEntity.ok().build();
     }

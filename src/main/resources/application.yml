@@ -15,6 +15,13 @@ spring:
       ddl-auto: update
     show-sql: true
 
+S3:
+  bucket:
+    name: ontheit-image
+
+aws:
+  access: ${AWS_ACCESS_KEY_ID}
+  secret: ${AWS_SECRET_ACCESS_KEY}
 
 jwt:
   secret:
