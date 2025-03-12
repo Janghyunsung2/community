@@ -3,6 +3,7 @@ package com.myproject.community.api.post.dto;
 import com.querydsl.core.annotations.QueryProjection;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,6 +23,7 @@ public class PostDetailDto {
     @Setter
     private long viewCount;
 
+    @Builder
     @QueryProjection
     public PostDetailDto(long id, String title, String content,  String nickname, boolean isDeleted) {
         this.id = id;
