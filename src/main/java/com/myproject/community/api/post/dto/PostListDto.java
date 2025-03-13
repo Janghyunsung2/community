@@ -3,6 +3,7 @@ package com.myproject.community.api.post.dto;
 import com.querydsl.core.annotations.QueryProjection;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,6 +17,7 @@ public class PostListDto {
     private LocalDateTime createAt;
     private long views;
 
+    @Builder
     @QueryProjection
     public PostListDto(long postId, String title, String nickName, LocalDateTime createAt) {
         this.postId = postId;
