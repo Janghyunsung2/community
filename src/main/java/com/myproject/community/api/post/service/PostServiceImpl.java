@@ -152,7 +152,7 @@ public class PostServiceImpl implements PostService {
 
         if(Boolean.FALSE.equals(redisTemplate.hasKey(viewCountKey))) {
             Long viewCount = redisTemplate.opsForValue().increment(redisKey);
-            redisTemplate.opsForValue().set(viewCountKey, "true", 1, TimeUnit.DAYS);
+            redisTemplate.opsForValue().set(viewCountKey, "true");
             return viewCount;
         }
         String viewCountStr = redisTemplate.opsForValue().get(redisKey);
