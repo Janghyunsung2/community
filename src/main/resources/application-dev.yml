@@ -1,0 +1,29 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:test
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  data:
+    redis:
+      port: 6379
+      password: ""
+      host: 18.189.11.17
+server:
+  port: 8080
+  address: 0.0.0.0
+
+MALE_HOST: smtp.gmail.com
+MALE_PORT: 587
+MALE_USERNAME: tlswlfk@gmail.com
+MALE_PASSWORD: prlmoepesmdmmdhq
+
+logging:
+  level:
+    org.springframework.web: debug
+    org.springframework.http.converter: debug
+
