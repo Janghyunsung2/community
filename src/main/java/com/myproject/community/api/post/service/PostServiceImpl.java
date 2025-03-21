@@ -18,8 +18,8 @@ import com.myproject.community.domain.post.Post;
 import com.myproject.community.error.CustomException;
 import com.myproject.community.error.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
+import java.time.Duration;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -152,12 +152,12 @@ public class PostServiceImpl implements PostService {
 
         if(Boolean.FALSE.equals(redisTemplate.hasKey(viewCountKey))) {
             Long viewCount = redisTemplate.opsForValue().increment(redisKey);
-            redisTemplate.opsForValue().set(viewCountKey, "true");
+            redisTemplate.persist(redisKey);
+            redisTemplate.opsForValue().set(viewCountKey, "true", Duration.ofHours(24));
             return viewCount;
         }
         String viewCountStr = redisTemplate.opsForValue().get(redisKey);
-        Long viewCount = viewCountStr != null ? Long.parseLong(viewCountStr) : 0L;
-        return viewCount;
+        return viewCountStr != null ? Long.parseLong(viewCountStr) : 0L;
     }
 
     private Long getPostViewCount(long postId) {

@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,6 +23,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -31,19 +34,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
     private final AuthService authService;
 
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException {
 
         try {
-            String token = cookieUtil.getTokenFromCookie(request, "access-token").orElse(null);
+            String accessToken = cookieUtil.getTokenFromCookie(request, "access-token").orElse(null);
+            if (accessToken == null) {
+                filterChain.doFilter(request, response);
+                return;
+            }
 
-            if (token == null) {
+            if (!jwtProvider.validateToken(accessToken)) {
                 refreshToken(request, response, filterChain);
                 return;
             }
 
-            long userId = jwtProvider.getMemberIdByRefreshToken(request);
+            long userId = jwtProvider.getMemberIdByToken(request);
             String memberUsername = authService.getMemberUsername(userId);
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(memberUsername);
@@ -55,6 +63,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             logger.error("JWT 오류", e);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Invalid JWT Token");
+
             return;
         } catch (Exception e) {
             logger.error("알 수 없는 오류", e);
@@ -68,13 +77,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     }
 
-    private long getUserId(HttpServletRequest request) {
-        return jwtProvider.getAuthUserId(request);
-    }
-
-    private long getUserIdByRefreshToken(HttpServletRequest request) {
-        return jwtProvider.getMemberIdByRefreshToken(request);
-    }
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
@@ -90,7 +92,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
                 return;
             }
-            MemberAuthDto authMember = authService.getAuthMember(getUserIdByRefreshToken(request));
+            MemberAuthDto authMember = authService.getAuthMember(
+                jwtProvider.getMemberIdByRefreshToken(request));
+            log.debug("리프레쉬토큰을 이용해 재발급되었습니다 userId:{}", authMember.getUserId());
             TokenInfo tokenInfo = jwtProvider.reissueToken(refreshToken, authMember);
             if (tokenInfo == null) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

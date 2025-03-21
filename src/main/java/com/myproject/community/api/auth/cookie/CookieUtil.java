@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class CookieUtil {
 
     private static final int REFRESH_TOKEN_MAX_AGE = 3 * 24 * 60 * 60; // 3일
-    private static final int ACCESS_TOKEN_MAX_AGE = 60 * 10; //
+    private static final int ACCESS_TOKEN_MAX_AGE = 3 * 24 * 60 * 60; //
 
     @Value("${spring.profiles.active}")
     private String profile;
