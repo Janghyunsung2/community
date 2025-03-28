@@ -72,20 +72,12 @@ public class PostServiceImpl implements PostService {
     @Override
     public Page<PostListDto> getPosts(long boardId, Pageable pageable) {
 
-        Page<PostListDto> postsByBoardId = postRepository.findPostsByBoardId(boardId, pageable);
-
-        postsByBoardId.getContent().forEach(postListDto -> postListDto.setViews(getPostViewCount(postListDto.getPostId())));
-
-        return postsByBoardId;
+        return postRepository.findPostsByBoardId(boardId, pageable);
     }
 
     @Transactional(readOnly = true)
     public PostDetailDto getPostDetail(long postId, HttpServletRequest request) {
         PostDetailDto postById = postRepository.findPostById(postId);
-        Long viewCount = postViewCount(postId, request);
-        if(viewCount > 0) {
-            postById.setViewCount(viewCount);
-        }
         return postById;
     }
 
@@ -136,8 +128,12 @@ public class PostServiceImpl implements PostService {
     @Override
     public Page<PostListDto> getPostsByKeyword(String keyword, Pageable pageable) {
         Page<PostListDto> posts = postRepository.findPostsByKeyword(keyword, pageable);
-        posts.getContent().forEach(postListDto -> postListDto.setViews(getPostViewCount(postListDto.getPostId())));
         return posts;
+    }
+
+    @Override
+    public void viewCount(long postId) {
+        postRepository.incrementViewCount(postId);
     }
 
     private Post findPostById(long postId) {

@@ -22,4 +22,6 @@ public interface PostService {
 
     Page<PostListDto> getPostsByKeyword(String keyword, Pageable pageable);
 
+    void viewCount(long postId);
+
 }

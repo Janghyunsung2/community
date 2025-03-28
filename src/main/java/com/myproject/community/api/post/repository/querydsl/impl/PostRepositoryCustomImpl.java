@@ -40,7 +40,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
         PathBuilder<QPost> entityPath = new PathBuilder<>(QPost.class, "post");
 
         List<PostListDto> postListDtos = queryFactory
-            .select(new QPostListDto(post.id, post.title, post.member.nickName, post.createdAt))
+            .select(new QPostListDto(post.id, post.title, post.member.nickName, post.createdAt, post.viewCount))
             .from(post)
             .join(board)
             .on(post.board.id.eq(board.id))
@@ -71,7 +71,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 
 
         PostDetailDto postDetailDto = queryFactory
-            .select(new QPostDetailDto(post.id, post.title, post.content, member.nickName,  post.postStatus.eq(PostStatus.ACTIVE)))
+            .select(new QPostDetailDto(post.id, post.title, post.content, member.nickName,  post.postStatus.eq(PostStatus.ACTIVE), post.viewCount))
             .from(post)
             .join(member).on(member.id.eq(post.member.id))
             .where(post.id.eq(postId))
@@ -85,12 +85,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
                 .fetchOne()
         ).orElse(0L);
 
-
-
-        assert postDetailDto != null;
         postDetailDto.setLikeCount(likeCount);
-
-
 
         List<String> path = queryFactory
             .select(image.path)
