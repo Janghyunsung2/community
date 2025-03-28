@@ -20,17 +20,17 @@ public class PostDetailDto {
     private boolean isDeleted;
     @Setter
     private long likeCount;
-    @Setter
     private long viewCount;
 
     @Builder
     @QueryProjection
-    public PostDetailDto(long id, String title, String content,  String nickname, boolean isDeleted) {
+    public PostDetailDto(long id, String title, String content,  String nickname, boolean isDeleted, long viewCount) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.nickname = nickname;
         this.isDeleted = isDeleted;
+        this.viewCount = viewCount;
     }
 
 
