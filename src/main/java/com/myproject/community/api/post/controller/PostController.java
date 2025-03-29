@@ -1,7 +1,9 @@
 package com.myproject.community.api.post.controller;
 
+import com.myproject.community.api.post.dto.PeriodType;
 import com.myproject.community.api.post.dto.PostDetailDto;
 import com.myproject.community.api.post.dto.PostListDto;
+import com.myproject.community.api.post.dto.PostViewRankingDto;
 import com.myproject.community.api.post.service.PostService;
 import com.myproject.community.api.post.dto.PostUpdateDto;
 import com.myproject.community.api.post.dto.PostWithBoardDto;
@@ -68,6 +70,12 @@ public class PostController {
     public ResponseEntity<Void> deletePost(@PathVariable long postId, HttpServletRequest request){
         postService.deletePost(postId, request);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/api/posts/views")
+    public ResponseEntity<List<PostViewRankingDto>> getPostViews(@RequestParam String period){
+        PeriodType periodType = PeriodType.from(period);
+        return ResponseEntity.ok(postService.getPostViewRanking(periodType));
     }
 
 

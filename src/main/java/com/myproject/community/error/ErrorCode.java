@@ -10,6 +10,7 @@ public enum ErrorCode {
 
     /* 400 BAD_REQUEST : 잘못된 요청 */
     CHAT_BAD_REQUEST(HttpStatus.BAD_REQUEST, "올바른 메세지가 아닙니다."),
+    PERIOD_BAD_REQUEST(HttpStatus.BAD_REQUEST, "올바른 Period가 아닙니다."),
 
     CATEGORY_NAME_DUPLICATE(HttpStatus.BAD_REQUEST, "이미 존재하는 카테고리입니다"),
     BOARD_TITLE_DUPLICATE(HttpStatus.BAD_REQUEST, "이미 존재하는 게시판입니다"),
