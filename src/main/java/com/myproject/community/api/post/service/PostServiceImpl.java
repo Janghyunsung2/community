@@ -5,7 +5,9 @@ import com.myproject.community.api.auth.jwt.JwtProvider;
 import com.myproject.community.api.board.repository.BoardRepository;
 import com.myproject.community.api.image.PostImageService;
 import com.myproject.community.api.member.repository.MemberRepository;
+import com.myproject.community.api.post.dto.PeriodType;
 import com.myproject.community.api.post.dto.PostUpdateDto;
+import com.myproject.community.api.post.dto.PostViewRankingDto;
 import com.myproject.community.api.post.dto.PostWithBoardDto;
 import com.myproject.community.api.post.dto.PostDetailDto;
 import com.myproject.community.api.post.dto.PostListDto;
@@ -20,7 +22,9 @@ import com.myproject.community.error.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Duration;
 import java.util.List;
+import java.util.Locale;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -28,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
@@ -134,6 +139,11 @@ public class PostServiceImpl implements PostService {
     @Override
     public void viewCount(long postId) {
         postRepository.incrementViewCount(postId);
+    }
+
+    @Override
+    public List<PostViewRankingDto> getPostViewRanking(PeriodType period) {
+        return postRepository.findPostViewRankByDate(period);
     }
 
     private Post findPostById(long postId) {

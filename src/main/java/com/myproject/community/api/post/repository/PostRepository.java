@@ -20,7 +20,7 @@ public interface PostRepository extends JpaRepository<Post, Long>, PostRepositor
     Page<PostListDto> findPostsByKeyword(String keyword, Pageable pageable);
 
     @Transactional
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query(value = "UPDATE Post p SET p.viewCount = p.viewCount + 1 WHERE p.id = :id")
     void incrementViewCount(Long id);
 }
