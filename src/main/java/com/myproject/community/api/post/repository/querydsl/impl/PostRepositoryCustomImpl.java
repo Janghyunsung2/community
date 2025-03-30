@@ -136,7 +136,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
             .leftJoin(postImage).on(postImage.post.id.eq(post.id))
             .leftJoin(image).on(image.id.eq(postImage.image.id))
             .where(post.board.id.eq(boardId))
-            .groupBy(post.id, post.title)
+            .groupBy(post.id, post.title, image.path)
             .orderBy(post.createdAt.desc())
             .limit(4)
             .fetch();
