@@ -1,5 +1,6 @@
 package com.myproject.community.api.post.service;
 
+import com.myproject.community.api.post.dto.BestPostDto;
 import com.myproject.community.api.post.dto.PeriodType;
 import com.myproject.community.api.post.dto.PostUpdateDto;
 import com.myproject.community.api.post.dto.PostViewRankingDto;
@@ -29,4 +30,5 @@ public interface PostService {
 
     List<PostViewRankingDto> getPostViewRanking(PeriodType period);
 
+    List<BestPostDto> getBestPosts(Long boardId);
 }

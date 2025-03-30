@@ -1,5 +1,6 @@
 package com.myproject.community.api.post.repository.querydsl;
 
+import com.myproject.community.api.post.dto.BestPostDto;
 import com.myproject.community.api.post.dto.PeriodType;
 import com.myproject.community.api.post.dto.PostDetailDto;
 import com.myproject.community.api.post.dto.PostListDto;
@@ -16,4 +17,6 @@ public interface PostRepositoryCustom {
 
 
     List<PostViewRankingDto> findPostViewRankByDate(PeriodType periodType);
+
+    List<BestPostDto> findBestPostByBoardId(Long boardId);
 }

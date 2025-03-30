@@ -1,6 +1,7 @@
 package com.myproject.community.api.board.service.impl;
 
 import com.myproject.community.api.board.dto.BoardAdminDto;
+import com.myproject.community.api.board.dto.BoardBestDto;
 import com.myproject.community.api.board.repository.BoardRepository;
 import com.myproject.community.api.board.repository.CategoryBoardRepository;
 import com.myproject.community.api.board.dto.BoardDto;
@@ -70,6 +71,11 @@ public class BoardServiceImpl implements BoardService {
     @Transactional(readOnly = true)
     public Page<BoardAdminDto> getBoardsAdminPage(Pageable pageable) {
         return boardRepository.getBoardByAdminPage(pageable);
+    }
+
+    @Override
+    public List<BoardBestDto> getBoardsBest() {
+        return boardRepository.getBoardBests();
     }
 
     @Transactional

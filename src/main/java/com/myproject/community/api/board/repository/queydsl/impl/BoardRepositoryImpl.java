@@ -1,21 +1,26 @@
 package com.myproject.community.api.board.repository.queydsl.impl;
 
 import com.myproject.community.api.board.dto.BoardAdminDto;
+import com.myproject.community.api.board.dto.BoardBestDto;
 import com.myproject.community.api.board.dto.BoardDto;
 import com.myproject.community.api.board.dto.BoardMainDto;
 import com.myproject.community.api.board.dto.QBoardAdminDto;
+import com.myproject.community.api.board.dto.QBoardBestDto;
 import com.myproject.community.api.board.dto.QBoardDto;
 import com.myproject.community.api.board.dto.QBoardMainDto;
 import com.myproject.community.api.board.repository.queydsl.BoardRepositoryCustom;
 import com.myproject.community.domain.board.QBoard;
 import com.myproject.community.domain.category.QCategory;
 import com.myproject.community.domain.category.QCategoryBoard;
+import com.myproject.community.domain.post.QPost;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.Query;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -78,6 +83,24 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
             .from(qBoard)
             .fetchOne();
         return new PageImpl<>(boardDtos, pageable, count != null ? count : 0);
+    }
+
+    @Override
+    public List<BoardBestDto> getBoardBests() {
+        QBoard qBoard = QBoard.board;
+        QPost qPost = QPost.post;
+        LocalDateTime start = LocalDate.now().atStartOfDay();
+        LocalDateTime end = LocalDate.now().plusDays(7).atStartOfDay();
+
+
+        return queryFactory.select(new QBoardBestDto(qBoard.id, qBoard.title))
+            .from(qBoard)
+            .join(qPost).on(qBoard.id.eq(qPost.board.id))
+            .where(qPost.createdAt.between(start, end))
+            .groupBy(qBoard.id)
+            .orderBy(qPost.count().desc())
+            .limit(5)
+            .fetch();
     }
 
 }

@@ -5,6 +5,7 @@ import com.myproject.community.api.auth.jwt.JwtProvider;
 import com.myproject.community.api.board.repository.BoardRepository;
 import com.myproject.community.api.image.PostImageService;
 import com.myproject.community.api.member.repository.MemberRepository;
+import com.myproject.community.api.post.dto.BestPostDto;
 import com.myproject.community.api.post.dto.PeriodType;
 import com.myproject.community.api.post.dto.PostUpdateDto;
 import com.myproject.community.api.post.dto.PostViewRankingDto;
@@ -130,20 +131,29 @@ public class PostServiceImpl implements PostService {
         }
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<PostListDto> getPostsByKeyword(String keyword, Pageable pageable) {
         Page<PostListDto> posts = postRepository.findPostsByKeyword(keyword, pageable);
         return posts;
     }
 
+
     @Override
     public void viewCount(long postId) {
         postRepository.incrementViewCount(postId);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<PostViewRankingDto> getPostViewRanking(PeriodType period) {
         return postRepository.findPostViewRankByDate(period);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<BestPostDto> getBestPosts(Long boardId) {
+        return postRepository.findBestPostByBoardId(boardId);
     }
 
     private Post findPostById(long postId) {
@@ -151,29 +161,6 @@ public class PostServiceImpl implements PostService {
             .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
     }
 
-    private Long postViewCount(long postId, HttpServletRequest request) {
-        String clientIp = getClientIp(request);
-        String viewCountKey = VIEW_COUNT_PREFIX + postId + ":" + clientIp;
-        String redisKey = VIEW_COUNT_PREFIX + postId;
-
-        if(Boolean.FALSE.equals(redisTemplate.hasKey(viewCountKey))) {
-            Long viewCount = redisTemplate.opsForValue().increment(redisKey);
-            redisTemplate.persist(redisKey);
-            redisTemplate.opsForValue().set(viewCountKey, "true", Duration.ofHours(24));
-            return viewCount;
-        }
-        String viewCountStr = redisTemplate.opsForValue().get(redisKey);
-        return viewCountStr != null ? Long.parseLong(viewCountStr) : 0L;
-    }
-
-    private Long getPostViewCount(long postId) {
-        String redisKey = VIEW_COUNT_PREFIX + postId;
-        String viewCount = redisTemplate.opsForValue().get(redisKey);
-        if(viewCount != null) {
-            return Long.parseLong(viewCount);
-        }
-        return 0L;
-    }
 
     private boolean isSameMember(Member member, Post post) {
         return post.getMember().equals(member);
@@ -187,13 +174,5 @@ public class PostServiceImpl implements PostService {
         return jwtProvider.getAuthUserId(request);
     }
 
-    private String getClientIp(HttpServletRequest request) {
-        String ip = request.getHeader("X-Forwarded-For");
-        if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getRemoteAddr();
-        }
-        return ip;
-
-    }
 
 }

@@ -1,5 +1,6 @@
 package com.myproject.community.api.board.controller;
 
+import com.myproject.community.api.board.dto.BoardBestDto;
 import com.myproject.community.api.board.dto.BoardMainDto;
 import com.myproject.community.api.board.service.BoardService;
 import com.myproject.community.api.board.dto.BoardWithCategoryDto;
@@ -21,6 +22,11 @@ public class BoardController {
     @GetMapping("/api/boards/main")
     public ResponseEntity<List<BoardMainDto>> getBoardsMain(){
         return ResponseEntity.ok(boardService.getBoardsByMainCategory());
+    }
+
+    @GetMapping("/api/boards/best")
+    public ResponseEntity<List<BoardBestDto>> getBoardsBest(){
+        return ResponseEntity.ok(boardService.getBoardsBest());
     }
 
 }

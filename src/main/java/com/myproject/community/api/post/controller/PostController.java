@@ -1,5 +1,6 @@
 package com.myproject.community.api.post.controller;
 
+import com.myproject.community.api.post.dto.BestPostDto;
 import com.myproject.community.api.post.dto.PeriodType;
 import com.myproject.community.api.post.dto.PostDetailDto;
 import com.myproject.community.api.post.dto.PostListDto;
@@ -30,16 +31,16 @@ public class PostController {
 
     private final PostService postService;
 
-    @PostMapping("/api/boards/{boardId}/posts")
-    public ResponseEntity<String> createPost(@PathVariable long boardId, @RequestPart PostWithBoardDto postWithBoardDto,
+    @PostMapping("/api/boards/{board-id}/posts")
+    public ResponseEntity<String> createPost(@PathVariable(name = "board-id") long boardId, @RequestPart PostWithBoardDto postWithBoardDto,
         List<MultipartFile> images, HttpServletRequest request) {
         postWithBoardDto.setImages(images);
         postService.createPost(boardId, postWithBoardDto, request);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/api/boards/{boardId}/posts")
-    public ResponseEntity<Page<PostListDto>> getPosts(@PathVariable long boardId, Pageable pageable){
+    @GetMapping("/api/boards/{board-id}/posts")
+    public ResponseEntity<Page<PostListDto>> getPosts(@PathVariable("board-id") long boardId, Pageable pageable){
         return ResponseEntity.ok(postService.getPosts(boardId, pageable));
     }
 
@@ -54,20 +55,20 @@ public class PostController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/api/posts/{postId}")
-    public ResponseEntity<PostDetailDto> getPost(@PathVariable long postId, HttpServletRequest request){
+    @GetMapping("/api/posts/{post-id}")
+    public ResponseEntity<PostDetailDto> getPost(@PathVariable("post-id") long postId, HttpServletRequest request){
         postService.viewCount(postId);
         return ResponseEntity.ok(postService.getPostDetail(postId, request));
     }
 
-    @PutMapping("/api/posts/{postId}")
-    public ResponseEntity<Void> updatePost(@PathVariable long postId, @RequestPart PostUpdateDto postUpdateDto, HttpServletRequest request){
+    @PutMapping("/api/posts/{post-id}")
+    public ResponseEntity<Void> updatePost(@PathVariable("post-id") long postId, @RequestPart PostUpdateDto postUpdateDto, HttpServletRequest request){
         postService.updatePost(postId ,postUpdateDto, request);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/api/posts/{postId}")
-    public ResponseEntity<Void> deletePost(@PathVariable long postId, HttpServletRequest request){
+    @DeleteMapping("/api/posts/{post-id}")
+    public ResponseEntity<Void> deletePost(@PathVariable("post-id") long postId, HttpServletRequest request){
         postService.deletePost(postId, request);
         return ResponseEntity.ok().build();
     }
@@ -76,6 +77,11 @@ public class PostController {
     public ResponseEntity<List<PostViewRankingDto>> getPostViews(@RequestParam String period){
         PeriodType periodType = PeriodType.from(period);
         return ResponseEntity.ok(postService.getPostViewRanking(periodType));
+    }
+
+    @GetMapping("/api/boards/{board-id}/best")
+    public ResponseEntity<List<BestPostDto>> getBestPosts(@PathVariable(name = "board-id") long boardId){
+        return ResponseEntity.ok(postService.getBestPosts(boardId));
     }
 
 

@@ -1,10 +1,12 @@
 package com.myproject.community.api.post.repository.querydsl.impl;
 
+import com.myproject.community.api.post.dto.BestPostDto;
 import com.myproject.community.api.post.dto.PeriodType;
 import com.myproject.community.api.post.dto.PostDetailDto;
 import com.myproject.community.api.post.dto.PostListDto;
 
 import com.myproject.community.api.post.dto.PostViewRankingDto;
+import com.myproject.community.api.post.dto.QBestPostDto;
 import com.myproject.community.api.post.dto.QPostDetailDto;
 import com.myproject.community.api.post.dto.QPostListDto;
 import com.myproject.community.api.post.dto.QPostViewRankingDto;
@@ -121,6 +123,23 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
             .limit(10)
             .fetch();
 
+    }
+
+    @Override
+    public List<BestPostDto> findBestPostByBoardId(Long boardId) {
+        QPost post = QPost.post;
+        QImage image = QImage.image;
+        QPostImage postImage = QPostImage.postImage;
+
+        return queryFactory.select(new QBestPostDto(post.id, post.title, image.path))
+            .from(post)
+            .join(postImage).on(postImage.post.id.eq(post.id))
+            .join(image).on(image.id.eq(postImage.image.id))
+            .where(post.board.id.eq(boardId))
+            .groupBy(post.id)
+            .orderBy(post.createdAt.desc())
+            .limit(4)
+            .fetch();
     }
 
     private LocalDateTime[] getPeriodRange(PeriodType periodType) {
