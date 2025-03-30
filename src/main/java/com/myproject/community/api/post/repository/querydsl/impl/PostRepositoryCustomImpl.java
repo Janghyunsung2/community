@@ -133,10 +133,10 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 
         return queryFactory.select(new QBestPostDto(post.id, post.title, image.path))
             .from(post)
-            .join(postImage).on(postImage.post.id.eq(post.id))
-            .join(image).on(image.id.eq(postImage.image.id))
+            .leftJoin(postImage).on(postImage.post.id.eq(post.id))
+            .leftJoin(image).on(image.id.eq(postImage.image.id))
             .where(post.board.id.eq(boardId))
-            .groupBy(post.id)
+            .groupBy(post.id, post.title)
             .orderBy(post.createdAt.desc())
             .limit(4)
             .fetch();
