@@ -19,16 +19,14 @@ public class PostListDto {
 
     @Builder
     @QueryProjection
-    public PostListDto(long postId, String title, String nickName, LocalDateTime createAt) {
+    public PostListDto(long postId, String title, String nickName, LocalDateTime createAt, long views) {
         this.postId = postId;
         this.title = title;
         this.nickName = nickName;
         this.createAt = createAt;
-    }
-
-    public void setViews(long views) {
         this.views = views;
     }
+
 
 
 }

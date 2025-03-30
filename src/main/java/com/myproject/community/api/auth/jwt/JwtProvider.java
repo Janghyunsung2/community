@@ -65,17 +65,6 @@ public class JwtProvider {
             .build();
     }
 
-    public TokenInfo validateToken(String reqRefreshToken, MemberAuthDto authMember) {
-        Claims claims = parseClaims(reqRefreshToken);
-        String refreshToken = redisTemplate.opsForValue().get(JWT_KEY_PREFIX + claims.getSubject());
-
-        if(!refreshToken.equals(reqRefreshToken)){
-            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
-        }
-
-        return generateToken(authMember);
-    }
-
     public TokenInfo reissueToken(String refreshToken, MemberAuthDto authMember) {
         Claims claims = parseClaims(refreshToken);
         String refresh = redisTemplate.opsForValue().get(JWT_KEY_PREFIX + claims.getSubject());
@@ -111,11 +100,30 @@ public class JwtProvider {
         return Long.parseLong(userId);
     }
 
-    public long getMemberIdByRefreshToken(HttpServletRequest request) {
-        String refreshToken = resolveRefreshTokenFromCookie(request);
-        Claims claims = parseClaims(refreshToken);
+    public long getMemberIdByToken(HttpServletRequest request) {
+        String accessToken = resolveAccessTokenFromCookie(request);
+        Claims claims = parseClaims(accessToken);
         String userId = claims.getSubject();
         return Long.parseLong(userId);
+    }
+
+    public long getMemberIdByRefreshToken(HttpServletRequest request) {
+        String refresh = resolveRefreshTokenFromCookie(request);
+        Claims claims = parseClaims(refresh);
+        String userId = claims.getSubject();
+        return Long.parseLong(userId);
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parser().setSigningKey(key).parseClaimsJws(token);
+            return true;
+        }catch (ExpiredJwtException e) {
+                return false; // 만료된 토큰이면 false 반환
+        } catch (Exception e) {
+                return false; // 위변조된 토큰 등도 false 반환
+        }
+
     }
 
 
@@ -180,7 +188,7 @@ public class JwtProvider {
             return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
         } catch (ExpiredJwtException e) {
             log.warn("만료된 JWT 토큰입니다: {}", e.getMessage());
-            throw new CustomException(ErrorCode.INVALID_TOKEN);  // ✅ 예외 던지기 추가
+            throw new CustomException(ErrorCode.INVALID_TOKEN);//// ✅ 예외 던지기 추가
         } catch (Exception e) {
             log.error("잘못된 JWT 토큰입니다: {}", e.getMessage());
             throw new CustomException(ErrorCode.INVALID_TOKEN);  // ✅ 예외 던지기 추가
