@@ -33,7 +33,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<CategoryMainDto> getMainCategory() {
-        return categoryRepository.getTop6ByOrderByOrderAsc();
+        return categoryRepository.getTopByOrderByOrderAsc();
     }
 
     @Transactional

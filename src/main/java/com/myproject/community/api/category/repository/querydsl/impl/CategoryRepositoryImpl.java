@@ -43,11 +43,11 @@ public class CategoryRepositoryImpl implements CategoryRepositoryCustom {
             .toList();
     }
 
-    public List<CategoryMainDto> getTop6ByOrderByOrderAsc() {
+    public List<CategoryMainDto> getTopByOrderByOrderAsc() {
         QCategory category = QCategory.category;
         return queryFactory.select(new QCategoryMainDto(category.id, category.name, category.displayOrder))
             .from(category)
-            .where(category.displayOrder.between(1, 6))
+            .where(category.displayOrder.between(1, 10))
             .orderBy(category.displayOrder.asc())
             .fetch();
     }
