@@ -23,7 +23,7 @@ public class CategoryController {
 
 
     @GetMapping("/api/categories/top6")
-    public ResponseEntity<List<CategoryMainDto>> categoryTop6() {
+    public ResponseEntity<List<CategoryMainDto>> categoryTop() {
         return ResponseEntity.ok(categoryService.getMainCategory());
     }
 

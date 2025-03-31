@@ -7,5 +7,5 @@ import java.util.List;
 public interface CategoryRepositoryCustom {
 
     List<CategoryWithChildrenDto> getCategoryWithChildren();
-    List<CategoryMainDto> getTop6ByOrderByOrderAsc();
+    List<CategoryMainDto> getTopByOrderByOrderAsc();
 }
