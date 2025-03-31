@@ -89,8 +89,8 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
     public List<BoardBestDto> getBoardBests() {
         QBoard qBoard = QBoard.board;
         QPost qPost = QPost.post;
-        LocalDateTime start = LocalDate.now().atStartOfDay();
-        LocalDateTime end = LocalDate.now().plusDays(7).atStartOfDay();
+        LocalDateTime start = LocalDate.now().minusDays(7).atStartOfDay();
+        LocalDateTime end = LocalDate.now().atStartOfDay();
 
 
         return queryFactory.select(new QBoardBestDto(qBoard.id, qBoard.title))
