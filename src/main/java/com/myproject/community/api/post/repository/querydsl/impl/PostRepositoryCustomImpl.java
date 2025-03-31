@@ -119,7 +119,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
         return queryFactory.select(new QPostViewRankingDto(post.id, post.title, post.board.id))
             .from(post)
             .where(post.createdAt.between(startDateTime, endDateTime))
-            .orderBy(post.viewCount.asc())
+            .orderBy(post.viewCount.desc())
             .limit(10)
             .fetch();
 

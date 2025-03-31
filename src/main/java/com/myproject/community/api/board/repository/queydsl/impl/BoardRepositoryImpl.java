@@ -97,7 +97,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
             .from(qBoard)
             .join(qPost).on(qBoard.id.eq(qPost.board.id))
             .where(qPost.createdAt.between(start, end))
-            .groupBy(qBoard.id)
+            .groupBy(qBoard.id, qBoard.title)
             .orderBy(qPost.count().desc())
             .limit(5)
             .fetch();
