@@ -47,7 +47,6 @@ public class CategoryRepositoryImpl implements CategoryRepositoryCustom {
         QCategory category = QCategory.category;
         return queryFactory.select(new QCategoryMainDto(category.id, category.name, category.displayOrder))
             .from(category)
-            .where(category.displayOrder.between(1, 10))
             .orderBy(category.displayOrder.asc())
             .fetch();
     }

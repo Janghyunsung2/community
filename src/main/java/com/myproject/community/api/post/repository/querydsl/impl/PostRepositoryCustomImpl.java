@@ -92,6 +92,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
                 .fetchOne()
         ).orElse(0L);
 
+        assert postDetailDto != null;
         postDetailDto.setLikeCount(likeCount);
 
         List<String> path = queryFactory
