@@ -146,16 +146,16 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
         LocalDate today = LocalDate.now();
         return switch (periodType){
             case DAILY -> new LocalDateTime[] {
-                today.atStartOfDay(),
-                today.plusDays(1).atStartOfDay()
+                today.minusDays(1).atStartOfDay(),
+                today.atStartOfDay()
             };
             case WEEKLY -> new LocalDateTime[] {
-                today.atStartOfDay(),
-                today.plusWeeks(1).atStartOfDay()
+                today.minusWeeks(1).atStartOfDay(),
+                today.atStartOfDay()
             };
             case MONTHLY -> new LocalDateTime[] {
-                today.atStartOfDay(),
-                today.plusMonths(1).atStartOfDay()
+                today.minusMonths(1).atStartOfDay(),
+                today.atStartOfDay()
             };
         };
     }
