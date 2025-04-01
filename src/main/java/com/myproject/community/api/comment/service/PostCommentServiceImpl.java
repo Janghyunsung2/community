@@ -16,6 +16,7 @@ import com.myproject.community.error.CustomException;
 import com.myproject.community.error.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -53,22 +54,18 @@ public class PostCommentServiceImpl implements PostCommentService {
     }
 
     @Transactional
-    public void updatePostComment(long commentId, PostCommentRequestDto postCommentRequestDto){
-        Comment comment = getCommentById(commentId);
+    public void updatePostComment(long commentId, PostCommentRequestDto postCommentRequestDto, HttpServletRequest request) {
+        Comment comment = getCommentById(commentId, request);
         comment.updateComment(postCommentRequestDto.getContent());
     }
 
     @Transactional
     @Override
-    public void deletePostCommenMember(long commentId) {
-        getCommentById(commentId).isDeleted();
-    }
-
-    @Transactional
-    public void deletePostCommentMember(long commentId){
-        Comment comment = getCommentById(commentId);
+    public void deletePostCommentMember(long commentId, HttpServletRequest request) {
+        Comment comment = getCommentById(commentId, request);
         comment.isDeleted();
     }
+
 
     @Transactional(readOnly = true)
     @Override
@@ -78,13 +75,20 @@ public class PostCommentServiceImpl implements PostCommentService {
 
     @Transactional
     @Override
-    public void deletePostCommentAdmin(long commentId) {
-        getCommentById(commentId).adminDelete();
+    public void deletePostCommentAdmin(long commentId, HttpServletRequest request) {
+        Comment comment = getCommentById(commentId, request);
+        comment.adminDelete();
     }
 
-    private Comment getCommentById(long commentId){
-        return commentRepository.findById(commentId)
+    private Comment getCommentById(long commentId, HttpServletRequest request) {
+        Comment comment = commentRepository.findById(commentId)
             .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
+        boolean existed = postCommentRepository.existsByMemberId(
+            jwtProvider.getAuthUserId(request));
+        if (!existed) {
+            throw new CustomException(ErrorCode.FORBIDDEN);
+        }
+        return comment;
     }
 
     @Transactional(readOnly = true)

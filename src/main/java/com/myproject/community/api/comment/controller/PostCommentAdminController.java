@@ -1,6 +1,7 @@
 package com.myproject.community.api.comment.controller;
 
 import com.myproject.community.api.comment.service.PostCommentService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +23,8 @@ public class PostCommentAdminController {
     }
 
     @DeleteMapping
-    public ResponseEntity<?> deleteByAdmin(@RequestParam("id") long id){
-
-        postCommentService.deletePostCommentAdmin(id);
+    public ResponseEntity<?> deleteByAdmin(@RequestParam("id") long id, HttpServletRequest request) {
+        postCommentService.deletePostCommentAdmin(id, request);
         return ResponseEntity.noContent().build();
     }
 }

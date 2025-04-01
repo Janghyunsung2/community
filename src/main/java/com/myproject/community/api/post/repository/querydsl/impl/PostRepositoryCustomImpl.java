@@ -78,7 +78,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 
 
         PostDetailDto postDetailDto = queryFactory
-            .select(new QPostDetailDto(post.id, post.title, post.content, member.nickName,  post.postStatus.eq(PostStatus.ACTIVE), post.viewCount))
+            .select(new QPostDetailDto(post.id, post.title, post.content, member.nickName,  post.postStatus.ne(PostStatus.ACTIVE), post.viewCount))
             .from(post)
             .join(member).on(member.id.eq(post.member.id))
             .where(post.id.eq(postId))

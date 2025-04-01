@@ -15,12 +15,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.filter.RequestContextFilter;
 
 @RestController
 @RequiredArgsConstructor
 public class PostCommentController {
 
     private final PostCommentService postCommentService;
+    private final RequestContextFilter requestContextFilter;
 
     @GetMapping("/api/posts/{post-id}/comments")
     public ResponseEntity<List<PostCommentResponseGroupDto>> getCommentByPostId(@PathVariable("post-id") Long postId) {
@@ -34,14 +36,14 @@ public class PostCommentController {
     }
 
     @PutMapping("/api/comments/{id}")
-    public ResponseEntity<Void> updateComment(@PathVariable long id, @RequestBody PostCommentRequestDto postCommentRequestDto) {
-        postCommentService.updatePostComment(id, postCommentRequestDto);
+    public ResponseEntity<Void> updateComment(@PathVariable long id, @RequestBody PostCommentRequestDto postCommentRequestDto, HttpServletRequest request) {
+        postCommentService.updatePostComment(id, postCommentRequestDto, request);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/api/comment/{id}")
-    public ResponseEntity<Void> deleteComment(@PathVariable long id) {
-        postCommentService.deletePostCommenMember(id);
+    @DeleteMapping("/api/comments/{id}")
+    public ResponseEntity<Void> deleteComment(@PathVariable long id, HttpServletRequest request) {
+        postCommentService.deletePostCommentMember(id, request);
         return ResponseEntity.noContent().build();
     }
 }

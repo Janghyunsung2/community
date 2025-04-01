@@ -77,14 +77,12 @@ public class PostServiceImpl implements PostService {
     @Transactional(readOnly = true)
     @Override
     public Page<PostListDto> getPosts(long boardId, Pageable pageable) {
-
         return postRepository.findPostsByBoardId(boardId, pageable);
     }
 
     @Transactional(readOnly = true)
     public PostDetailDto getPostDetail(long postId, HttpServletRequest request) {
-        PostDetailDto postById = postRepository.findPostById(postId);
-        return postById;
+        return postRepository.findPostById(postId);
     }
 
     @Transactional
@@ -125,7 +123,7 @@ public class PostServiceImpl implements PostService {
             .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
         Role role = account.getRole();
         if(role.equals(Role.ADMIN)) {
-            post.authorDelete();
+            post.adminDelete();
         }else {
             throw new CustomException(ErrorCode.FORBIDDEN);
         }
@@ -134,8 +132,7 @@ public class PostServiceImpl implements PostService {
     @Transactional(readOnly = true)
     @Override
     public Page<PostListDto> getPostsByKeyword(String keyword, Pageable pageable) {
-        Page<PostListDto> posts = postRepository.findPostsByKeyword(keyword, pageable);
-        return posts;
+        return postRepository.findPostsByKeyword(keyword, pageable);
     }
 
 

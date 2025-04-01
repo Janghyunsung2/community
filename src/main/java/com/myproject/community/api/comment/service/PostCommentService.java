@@ -13,13 +13,13 @@ public interface PostCommentService {
 
     List<PostCommentResponseGroupDto> getCommentGroupByPostId(long postId);
 
-    void updatePostComment(long commentId, PostCommentRequestDto postCommentRequestDto);
+    void updatePostComment(long commentId, PostCommentRequestDto postCommentRequestDto, HttpServletRequest request);
 
-    void deletePostCommenMember(long commentId);
+    void deletePostCommentMember(long commentId, HttpServletRequest request);
 
 
     Page<PostCommentResponseDto> getCommentByKeyword(String keyword, Pageable pageable);
 
-    void deletePostCommentAdmin(long commentId);
+    void deletePostCommentAdmin(long commentId, HttpServletRequest request);
 
 }

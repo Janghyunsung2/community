@@ -4,6 +4,7 @@ import com.myproject.community.api.comment.dto.PostCommentResponseDto;
 import com.myproject.community.api.comment.dto.PostCommentResponseGroupDto;
 import com.myproject.community.api.comment.dto.QPostCommentResponseDto;
 import com.myproject.community.api.comment.repository.querydsl.CommentRepositoryCustom;
+import com.myproject.community.domain.comment.CommentStatus;
 import com.myproject.community.domain.comment.QComment;
 import com.myproject.community.domain.comment.QCommentLike;
 import com.myproject.community.domain.member.QMember;
@@ -41,7 +42,7 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
 
         // 1. 루트 댓글 (부모가 null인 댓글) 조회
         List<Tuple> rootTuples = queryFactory
-            .select(qComment.id, qComment.content, qComment.createdAt, qMember.nickName)
+            .select(qComment.id, qComment.content, qComment.createdAt, qMember.nickName, qComment.commentStatus)
             .from(qComment)
             .join(qPostComment).on(qComment.id.eq(qPostComment.comment.id))
             .join(qPost).on(qPost.id.eq(qPostComment.post.id))
@@ -53,12 +54,13 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
         List<Long> rootIds = new ArrayList<>();
 
         for (Tuple tuple : rootTuples) {
-            Long commentId = tuple.get(qComment.id);
+            long commentId = Objects.requireNonNull(tuple.get(qComment.id));
             String content = tuple.get(qComment.content);
             LocalDateTime createdAt = tuple.get(qComment.createdAt);
             String nickName = tuple.get(qMember.nickName);
+            CommentStatus status = tuple.get(qComment.commentStatus);
 
-            PostCommentResponseDto dto = new PostCommentResponseDto(commentId, content, createdAt, nickName);
+            PostCommentResponseDto dto = new PostCommentResponseDto(commentId, content, createdAt, nickName, status);
             dto.setContentLikes(commentLikeCounts(commentId));
             rootDtos.add(dto);
             rootIds.add(commentId);
@@ -66,7 +68,7 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
 
         // 2. 자식 댓글 조회 (부모 id가 루트 댓글 id에 포함되는 댓글)
         List<Tuple> childTuples = queryFactory
-            .select(qComment.id, qComment.content, qComment.createdAt, qMember.nickName, qComment.parent.id)
+            .select(qComment.id, qComment.content, qComment.createdAt, qMember.nickName, qComment.parent.id, qComment.commentStatus)
             .from(qComment)
             .join(qPostComment).on(qComment.id.eq(qPostComment.comment.id))
             .join(qPost).on(qPost.id.eq(qPostComment.post.id))
@@ -77,13 +79,14 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
         // 자식 댓글을 부모 id 기준으로 그룹화
         Map<Long, List<PostCommentResponseDto>> childrenMap = new HashMap<>();
         for (Tuple tuple : childTuples) {
-            Long commentId = tuple.get(qComment.id);
+            long commentId = Objects.requireNonNull(tuple.get(qComment.id));
             String content = tuple.get(qComment.content);
             LocalDateTime createdAt = tuple.get(qComment.createdAt);
             String nickName = tuple.get(qMember.nickName);
             Long parentId = tuple.get(qComment.parent.id);
+            CommentStatus status = tuple.get(qComment.commentStatus);
 
-            PostCommentResponseDto childDto = new PostCommentResponseDto(commentId, content, createdAt, nickName);
+            PostCommentResponseDto childDto = new PostCommentResponseDto(commentId, content, createdAt, nickName, status);
             childDto.setContentLikes((int) commentLikeCounts(commentId));
             childrenMap.computeIfAbsent(parentId, k -> new ArrayList<>()).add(childDto);
         }
