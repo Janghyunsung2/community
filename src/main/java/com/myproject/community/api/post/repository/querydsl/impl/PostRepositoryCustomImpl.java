@@ -51,7 +51,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
             .from(post)
             .join(board)
             .on(post.board.id.eq(board.id))
-            .where(post.board.id.eq(boardId).and(post.postStatus.eq(PostStatus.ACTIVE)))
+            .where(post.board.id.eq(boardId).and(post.postStatus.eq(PostStatus.ACTIVE).and(board.active.isTrue())))
             .orderBy(QuerydslUtils.getOrderSpecifiers(pageable, entityPath).toArray(new OrderSpecifier[0]))
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
@@ -78,7 +78,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 
 
         PostDetailDto postDetailDto = queryFactory
-            .select(new QPostDetailDto(post.id, post.title, post.content, member.nickName,  post.postStatus.ne(PostStatus.ACTIVE), post.viewCount))
+            .select(new QPostDetailDto(post.id, post.title, post.content, member.nickName,  post.postStatus.ne(PostStatus.ACTIVE), post.viewCount,post.createdAt, post.board.id, post.board.title))
             .from(post)
             .join(member).on(member.id.eq(post.member.id))
             .where(post.id.eq(postId))

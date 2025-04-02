@@ -2,8 +2,8 @@ package com.myproject.community.api.chat;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -30,8 +30,13 @@ public class ChatController {
 
     @MessageMapping("/chat.addUser/{room-id}")
     @SendTo("/topic/public/{room-id}")
-    public ChatMessageDto addUser(@DestinationVariable("room-id") long roomId, @Payload ChatMessageDto chatMessage, SimpMessageHeaderAccessor headerAccessor) {
-        headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
+    public ChatMessageDto addUser(@DestinationVariable("room-id") long roomId,
+        @Payload ChatMessageDto chatMessage, SimpMessageHeaderAccessor headerAccessor, HttpServletRequest request) {
+        Map<String, Object> sessionAttributes = headerAccessor.getSessionAttributes();
+        assert sessionAttributes != null;
+        sessionAttributes.put("username", chatMessage.getSender());
+
+        chatService.addUserToRoom(request, roomId, chatMessage, headerAccessor);
         return chatMessage;
     }
 

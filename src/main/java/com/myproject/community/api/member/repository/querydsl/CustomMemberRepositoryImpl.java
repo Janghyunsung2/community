@@ -4,7 +4,6 @@ import com.myproject.community.api.member.dto.MemberAdminResponseDto;
 import com.myproject.community.api.member.dto.QMemberAdminResponseDto;
 import com.myproject.community.domain.account.QAccount;
 import com.myproject.community.domain.gender.QGender;
-import com.myproject.community.domain.member.Member;
 import com.myproject.community.domain.member.QMember;
 import com.myproject.community.domain.member.QMemberStatus;
 import com.myproject.community.infra.querydsl.QuerydslUtils;
@@ -34,13 +33,13 @@ public class CustomMemberRepositoryImpl implements CustomMemberRepository {
 
         PathBuilder<QMember> entityPath = new PathBuilder<>(QMember.class, "member");
 
-        List<MemberAdminResponseDto> memberAdminResponseDtos = queryFactory.selectDistinct(
+        List<MemberAdminResponseDto> memberAdminResponseDtos = queryFactory.select(
                 new QMemberAdminResponseDto(qMember.id, qMember.name, qMember.nickName, qMember.email,
                     qMember.phoneNumber, qMemberStatus.status.stringValue(), qGender.name, qAccount.role.stringValue()))
             .from(qMember)
-            .join(qMemberStatus).on(qMember.memberStatus.id.eq(qMemberStatus.id)).fetchJoin()
-            .join(qGender).on(qGender.id.eq(qMember.gender.id)).fetchJoin()
-            .join(qAccount).on(qAccount.id.eq(qMember.id)).fetchJoin()
+            .leftJoin(qMemberStatus).on(qMember.memberStatus.id.eq(qMemberStatus.id)).fetchJoin()
+            .leftJoin(qGender).on(qGender.id.eq(qMember.gender.id)).fetchJoin()
+            .leftJoin(qAccount).on(qAccount.member.id.eq(qMember.id)).fetchJoin()
             .orderBy(QuerydslUtils.getOrderSpecifiers(pageable, entityPath)
                 .toArray(new OrderSpecifier[0]))
             .offset(pageable.getOffset())

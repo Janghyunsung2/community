@@ -6,7 +6,9 @@ import com.myproject.community.api.board.repository.BoardRepository;
 import com.myproject.community.api.image.PostImageService;
 import com.myproject.community.api.member.repository.MemberRepository;
 import com.myproject.community.api.post.dto.BestPostDto;
+import com.myproject.community.api.post.dto.BoardInfoDto;
 import com.myproject.community.api.post.dto.PeriodType;
+import com.myproject.community.api.post.dto.PostListViewDto;
 import com.myproject.community.api.post.dto.PostUpdateDto;
 import com.myproject.community.api.post.dto.PostViewRankingDto;
 import com.myproject.community.api.post.dto.PostWithBoardDto;
@@ -76,8 +78,14 @@ public class PostServiceImpl implements PostService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<PostListDto> getPosts(long boardId, Pageable pageable) {
-        return postRepository.findPostsByBoardId(boardId, pageable);
+    public PostListViewDto getPosts(long boardId, Pageable pageable) {
+        Page<PostListDto> posts = postRepository.findPostsByBoardId(boardId, pageable);
+        BoardInfoDto boardInfoDto = boardRepository.getBoardByBoardId(boardId)
+            .orElseThrow(() -> new CustomException(ErrorCode.BOARD_NOT_FOUND));
+        return PostListViewDto.builder()
+            .boardInfo(boardInfoDto)
+            .posts(posts)
+            .build();
     }
 
     @Transactional(readOnly = true)

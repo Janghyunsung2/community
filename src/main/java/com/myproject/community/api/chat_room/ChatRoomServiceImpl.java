@@ -17,6 +17,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,8 +40,15 @@ public class ChatRoomServiceImpl implements ChatRoomService {
             .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         ChatRoom chatRoom = ChatRoom.builder().title(chatRoomDto.getName())
-            .capacity(chatRoomDto.getCapacity()).member(member).build();
+            .capacity(chatRoomDto.getCapacity()).host(member).build();
         chatRoomRepository.save(chatRoom);
+
+        ChatRoomMember chatRoomMember = ChatRoomMember.builder()
+            .chatRoom(chatRoom)
+            .member(member)
+            .build();
+
+        chatRoomMemberRepository.save(chatRoomMember);
 
         long categoryId = chatRoomDto.getCategoryId();
         Category category = categoryRepository.findById(categoryId)
@@ -75,7 +83,8 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     @Override
     public Page<ChatRoomResponseDto> getChatRoomsByCategoryId(long categoryId,
         Pageable pageable) {
-        return chatRoomRepository.getChatRoomsByCategoryId(categoryId, pageable);
+        return chatRoomRepository.getChatRoomsByCategoryId(
+            categoryId, pageable);
     }
 
 

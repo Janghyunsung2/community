@@ -9,6 +9,8 @@ import com.myproject.community.api.board.dto.QBoardBestDto;
 import com.myproject.community.api.board.dto.QBoardDto;
 import com.myproject.community.api.board.dto.QBoardMainDto;
 import com.myproject.community.api.board.repository.queydsl.BoardRepositoryCustom;
+import com.myproject.community.api.post.dto.BoardInfoDto;
+import com.myproject.community.api.post.dto.QBoardInfoDto;
 import com.myproject.community.domain.board.QBoard;
 import com.myproject.community.domain.category.QCategory;
 import com.myproject.community.domain.category.QCategoryBoard;
@@ -22,6 +24,7 @@ import jakarta.persistence.Query;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -35,7 +38,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
 
-    public List<BoardMainDto> getBoardMainByTop6Category(){
+    public List<BoardMainDto> getBoardMainByTopCategory(){
         QCategoryBoard qCategoryBoard = QCategoryBoard.categoryBoard;
         QBoard qBoard = QBoard.board;
         QCategory category = QCategory.category;
@@ -46,7 +49,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
             .on(qCategoryBoard.board.id.eq(qBoard.id))
             .join(category)
             .on(category.id.eq(qCategoryBoard.category.id))
-            .where(category.displayOrder.isNotNull().and(category.displayOrder.between(1,6)))
+            .where(category.displayOrder.isNotNull().and(category.displayOrder.between(1,6).and(qBoard.active.isTrue())))
             .fetch();
 
     }
@@ -101,6 +104,16 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
             .orderBy(qPost.count().desc())
             .limit(5)
             .fetch();
+    }
+
+    @Override
+    public Optional<BoardInfoDto> getBoardByBoardId(long boardId) {
+        QBoard qBoard = QBoard.board;
+
+       return Optional.ofNullable(queryFactory.select(new QBoardInfoDto(qBoard.id, qBoard.title))
+            .from(qBoard)
+            .where(qBoard.id.eq(boardId))
+           .fetchOne());
     }
 
 }

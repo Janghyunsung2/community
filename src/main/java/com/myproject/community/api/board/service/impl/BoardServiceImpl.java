@@ -48,7 +48,7 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public List<BoardMainDto> getBoardsByMainCategory() {
-        return boardRepository.getBoardMainByTop6Category();
+        return boardRepository.getBoardMainByTopCategory();
     }
 
     @Transactional

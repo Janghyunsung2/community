@@ -23,7 +23,6 @@ public class ChatRoomController {
         chatRoomService.createChatRoom(chatRoomDto, request);
         return ResponseEntity.ok("Chat room created");
     }
-
 //    @GetMapping
 //    public ResponseEntity<List<ChatRoomResponseDto>> getAllChatRooms(){
 //        List<ChatRoomResponseDto> allChatRooms = chatRoomService.getAllChatRooms();
@@ -37,7 +36,7 @@ public class ChatRoomController {
     }
 
     @PostMapping("{room-id}/join")
-    public ResponseEntity<String> joinChatRoom(@PathVariable long roomId, HttpServletRequest request) {
+    public ResponseEntity<String> joinChatRoom(@PathVariable(name = "room-id") long roomId, HttpServletRequest request) {
         chatRoomService.joinChatRoom(roomId, request);
         return ResponseEntity.ok("Chat room joined");
     }

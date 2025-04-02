@@ -50,7 +50,7 @@ public class SecurityConfig {
             .cors(Customizer.withDefaults())
             .csrf(CsrfConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/**").permitAll()
+                .requestMatchers("/api/admin").hasRole("ADMIN")
                 .requestMatchers("/ws-chat/**").permitAll()
                 .requestMatchers("/api/**").permitAll()
                 .requestMatchers("/h2-console/**").hasRole("ADMIN")

@@ -16,10 +16,15 @@ public class ChatRoomResponseDto {
 
     @Builder
     @QueryProjection
-    public ChatRoomResponseDto(long id, String title, int capacity) {
+    public ChatRoomResponseDto(long id, String title, int capacity, int memberCount) {
         this.id = id;
         this.title = title;
         this.capacity = capacity;
+        this.memberCount = memberCount;
+    }
+
+    public void memberCount(int memberCount) {
+        this.memberCount = memberCount;
     }
 
     public void updateMemberCount(int memberCount) {

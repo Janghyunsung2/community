@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,6 +27,7 @@ public class ChatRoomMember {
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
 
+    @Builder
     public ChatRoomMember(ChatRoom chatRoom, Member member) {
         this.chatRoom = chatRoom;
         this.member = member;

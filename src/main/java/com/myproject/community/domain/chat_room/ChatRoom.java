@@ -26,12 +26,12 @@ public class ChatRoom {
     private int capacity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Member member;
+    private Member host;
 
     @Builder
-    public ChatRoom(String title, int capacity, Member member) {
+    public ChatRoom(String title, int capacity, Member host) {
         this.title = title;
         this.capacity = capacity;
-        this.member = member;
+        this.host = host;
     }
 }

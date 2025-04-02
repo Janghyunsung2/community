@@ -106,7 +106,7 @@ class BoardServiceImplTest {
 
         boardServiceImpl.getBoardsByMainCategory();
 
-        Mockito.verify(boardRepository, Mockito.times(1)).getBoardMainByTop6Category();
+        Mockito.verify(boardRepository, Mockito.times(1)).getBoardMainByTopCategory();
     }
 
     @Test

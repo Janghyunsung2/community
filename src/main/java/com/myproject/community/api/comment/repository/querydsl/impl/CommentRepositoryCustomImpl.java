@@ -110,7 +110,7 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
         PathBuilder<QComment> entityPath = new PathBuilder<>(QComment.class, "comment");
         List<PostCommentResponseDto> postCommentResponseDtos = queryFactory.selectDistinct(
                 new QPostCommentResponseDto(qComment.id, qComment.content, qComment.createdAt,
-                    qMember.nickName))
+                    qMember.nickName, qComment.commentStatus))
             .from(qComment)
             .join(qPostComment).on(qComment.id.eq(qPostComment.comment.id))
             .join(qPost).on(qPost.id.eq(qPostComment.post.id))

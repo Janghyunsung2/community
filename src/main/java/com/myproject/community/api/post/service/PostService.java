@@ -2,6 +2,7 @@ package com.myproject.community.api.post.service;
 
 import com.myproject.community.api.post.dto.BestPostDto;
 import com.myproject.community.api.post.dto.PeriodType;
+import com.myproject.community.api.post.dto.PostListViewDto;
 import com.myproject.community.api.post.dto.PostUpdateDto;
 import com.myproject.community.api.post.dto.PostViewRankingDto;
 import com.myproject.community.api.post.dto.PostWithBoardDto;
@@ -15,7 +16,7 @@ import org.springframework.data.domain.Pageable;
 public interface PostService {
     void createPost(long boardId, PostWithBoardDto postWithBoardDto, HttpServletRequest request);
 
-    Page<PostListDto> getPosts(long boardId, Pageable pageable);
+    PostListViewDto getPosts(long boardId, Pageable pageable);
 
     PostDetailDto getPostDetail(long postId, HttpServletRequest request);
 

@@ -14,9 +14,11 @@ import com.myproject.community.error.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +35,8 @@ public class ChatServiceImpl implements ChatService {
 
     private final MemberRepository memberRepository;
     private final JwtProvider jwtProvider;
+    private final ChatRoomRepository chatRoomRepository;
+    private final ChatRoomMemberRepository chatRoomMemberRepository;
 
     @Transactional(readOnly = true)
     @Override
@@ -72,8 +76,21 @@ public class ChatServiceImpl implements ChatService {
             .collect(Collectors.toList());
     }
 
+    @Transactional
+    @Override
+    public void addUserToRoom(HttpServletRequest request, long roomId, ChatMessageDto chatMessage, SimpMessageHeaderAccessor headerAccessor) {
+        Map<String, Object> sessionAttributes = headerAccessor.getSessionAttributes();
+        assert sessionAttributes != null;
+        sessionAttributes.put("username", chatMessage.getSender());
 
+        long memberId = jwtProvider.getAuthUserId(request);
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+            .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
+        chatRoomMemberRepository.save(ChatRoomMember.builder().chatRoom(chatRoom).member(member).build());
 
+    }
 
 
 }

@@ -9,6 +9,7 @@ import com.myproject.community.api.image.PostImageService;
 import com.myproject.community.api.member.repository.MemberRepository;
 import com.myproject.community.api.post.dto.PostDetailDto;
 import com.myproject.community.api.post.dto.PostListDto;
+import com.myproject.community.api.post.dto.PostListViewDto;
 import com.myproject.community.api.post.dto.PostUpdateDto;
 import com.myproject.community.api.post.dto.PostWithBoardDto;
 import com.myproject.community.api.post.repository.PostRepository;
@@ -118,9 +119,9 @@ class PostServiceImplTest {
 
         Mockito.when(valueOperations.get(Mockito.anyString())).thenReturn("10");
 
-        Page<PostListDto> posts = postService.getPosts(boardId, pageable);
+        PostListViewDto posts = postService.getPosts(boardId, pageable);
 
-        assertEquals(posts, postListDtos);
+        assertEquals(posts.getPosts(), postListDtos);
     }
 
     @Test
@@ -143,9 +144,9 @@ class PostServiceImplTest {
 
         Mockito.when(valueOperations.get(Mockito.anyString())).thenReturn(null);
 
-        Page<PostListDto> posts = postService.getPosts(boardId, pageable);
+        PostListViewDto posts = postService.getPosts(boardId, pageable);
 
-        assertEquals(posts, postListDtos);
+        assertEquals(posts.getPosts(), postListDtos);
     }
 
     @Test

@@ -4,6 +4,7 @@ import com.myproject.community.api.post.dto.BestPostDto;
 import com.myproject.community.api.post.dto.PeriodType;
 import com.myproject.community.api.post.dto.PostDetailDto;
 import com.myproject.community.api.post.dto.PostListDto;
+import com.myproject.community.api.post.dto.PostListViewDto;
 import com.myproject.community.api.post.dto.PostViewRankingDto;
 import com.myproject.community.api.post.service.PostService;
 import com.myproject.community.api.post.dto.PostUpdateDto;
@@ -40,7 +41,7 @@ public class PostController {
     }
 
     @GetMapping("/api/boards/{board-id}/posts")
-    public ResponseEntity<Page<PostListDto>> getPosts(@PathVariable("board-id") long boardId, Pageable pageable){
+    public ResponseEntity<PostListViewDto> getPosts(@PathVariable("board-id") long boardId, Pageable pageable){
         return ResponseEntity.ok(postService.getPosts(boardId, pageable));
     }
 
