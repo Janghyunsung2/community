@@ -2,6 +2,7 @@ package com.myproject.community.api.category.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
@@ -12,6 +13,7 @@ public class CategoryChildrenDto {
     private String name;
     private CategoryDto parent;
 
+    @Builder
     @QueryProjection
     public CategoryChildrenDto(long id, String name, CategoryDto parent) {
         this.id = id;
