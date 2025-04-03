@@ -7,10 +7,14 @@ import com.myproject.community.api.auth.jwt.JwtProvider;
 import com.myproject.community.api.board.repository.BoardRepository;
 import com.myproject.community.api.image.PostImageService;
 import com.myproject.community.api.member.repository.MemberRepository;
+import com.myproject.community.api.post.dto.BestPostDto;
+import com.myproject.community.api.post.dto.BoardInfoDto;
+import com.myproject.community.api.post.dto.PeriodType;
 import com.myproject.community.api.post.dto.PostDetailDto;
 import com.myproject.community.api.post.dto.PostListDto;
 import com.myproject.community.api.post.dto.PostListViewDto;
 import com.myproject.community.api.post.dto.PostUpdateDto;
+import com.myproject.community.api.post.dto.PostViewRankingDto;
 import com.myproject.community.api.post.dto.PostWithBoardDto;
 import com.myproject.community.api.post.repository.PostRepository;
 import com.myproject.community.domain.account.Account;
@@ -110,87 +114,26 @@ class PostServiceImplTest {
             .nickName("test")
             .build();
 
-        Page<PostListDto> postListDtos = new PageImpl<>(List.of(postListDto), pageable, 1);
-
-        Mockito.when(redisTemplate.opsForValue()).thenReturn(valueOperations);
-
-
-        Mockito.when(postRepository.findPostsByBoardId(boardId, pageable)).thenReturn(postListDtos);
-
-        Mockito.when(valueOperations.get(Mockito.anyString())).thenReturn("10");
-
-        PostListViewDto posts = postService.getPosts(boardId, pageable);
-
-        assertEquals(posts.getPosts(), postListDtos);
-    }
-
-    @Test
-    @DisplayName("게시물 목록 조회수 널")
-    void getPostsViewCountNull() {
-        long boardId = 1L;
-        Pageable pageable = Pageable.ofSize(10);
-        PostListDto postListDto = PostListDto.builder()
-            .postId(1L)
-            .title("title")
-            .createAt(LocalDateTime.now())
-            .nickName("test")
-            .build();
-
-        Mockito.when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+        BoardInfoDto boardInfoDto = BoardInfoDto.builder().id(boardId).title("test").build();
 
         Page<PostListDto> postListDtos = new PageImpl<>(List.of(postListDto), pageable, 1);
 
+
+        Mockito.when(boardRepository.getBoardByBoardId(boardId)).thenReturn(Optional.of(boardInfoDto));
         Mockito.when(postRepository.findPostsByBoardId(boardId, pageable)).thenReturn(postListDtos);
 
-        Mockito.when(valueOperations.get(Mockito.anyString())).thenReturn(null);
+        PostListViewDto postListViewDto = PostListViewDto.builder().posts(postListDtos)
+            .boardInfo(boardInfoDto).build();
 
         PostListViewDto posts = postService.getPosts(boardId, pageable);
 
-        assertEquals(posts.getPosts(), postListDtos);
+
+        assertEquals(posts.getPosts(), postListViewDto.getPosts());
+        assertEquals(posts.getBoardInfo(), postListViewDto.getBoardInfo());
     }
 
-    @Test
-    @DisplayName("게시글 상세페이지(조회수0)")
-    void getPostDetailSuccessViewZero() {
-        long postId = 1L;
-        PostDetailDto postDetailDto = PostDetailDto.builder()
-            .title("title")
-            .content("content")
-            .id(postId)
-            .nickname("nickname")
-            .build();
-
-        Mockito.when(redisTemplate.opsForValue()).thenReturn(valueOperations);
 
 
-        Mockito.when(redisTemplate.hasKey(Mockito.anyString())).thenReturn(false);
-
-        Mockito.when(postRepository.findPostById(postId)).thenReturn(postDetailDto);
-
-        PostDetailDto postDetail = postService.getPostDetail(postId, request);
-        assertEquals(postDetail, postDetailDto);
-    }
-
-    @Test
-    @DisplayName("게시글 상세페이지(조회수0)")
-    void getPostDetailSuccess() {
-        long postId = 1L;
-        PostDetailDto postDetailDto = PostDetailDto.builder()
-            .title("title")
-            .content("content")
-            .id(postId)
-            .nickname("nickname")
-            .build();
-        Mockito.when(redisTemplate.opsForValue()).thenReturn(valueOperations);
-
-        Mockito.when(redisTemplate.hasKey(Mockito.anyString())).thenReturn(true);
-        Mockito.when(valueOperations.get(Mockito.anyString())).thenReturn("10");
-
-        Mockito.when(postRepository.findPostById(postId)).thenReturn(postDetailDto);
-
-        PostDetailDto postDetail = postService.getPostDetail(postId, request);
-        assertEquals(postDetail, postDetailDto);
-    }
 
     @Test
     @DisplayName("게시물 수정 성공")
@@ -318,23 +261,55 @@ class PostServiceImplTest {
     }
 
     @Test
-    @DisplayName("게시물 검색성공")
-    void getPostByKeywordSuccess() {
-        String keyword = "test";
-        Pageable pageable = Pageable.ofSize(10);
-        PostListDto postListDto = PostListDto.builder()
-            .nickName("test")
-            .createAt(LocalDateTime.now())
-            .title("title")
-            .postId(1L)
-            .build();
-        Page<PostListDto> postListDtos = new PageImpl<>(List.of(postListDto), pageable, 1L);
-        Mockito.when(postRepository.findPostsByKeyword(keyword, pageable)).thenReturn(postListDtos);
-        Mockito.when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+    @DisplayName("게시물 조회수")
+    void viewCountSuccess() {
+        long postId = 1L;
 
-        Page<PostListDto> postsByKeyword = postService.getPostsByKeyword(keyword, pageable);
-        assertEquals(postListDtos, postsByKeyword);
+        postService.viewCount(postId);
+
+        Mockito.verify(postRepository, Mockito.times(1)).incrementViewCount(postId);
     }
+
+    @Test
+    @DisplayName("게시물 조회순 일간 랭킹")
+    void postRankViewSuccess() {
+        PeriodType daily = PeriodType.DAILY;
+        long boardId = 1l;
+
+        PostViewRankingDto postViewRankingDto = PostViewRankingDto.builder()
+            .boardId(boardId)
+            .title("title")
+            .build();
+
+        Mockito.when(postRepository.findPostViewRankByDate(daily)).thenReturn(List.of(postViewRankingDto));
+
+        List<PostViewRankingDto> postViewRanking = postService.getPostViewRanking(daily);
+
+        assertEquals(1, postViewRanking.size());
+        assertEquals(boardId, postViewRanking.get(0).getBoardId());
+        assertEquals("title", postViewRanking.get(0).getTitle());
+    }
+
+    @Test
+    @DisplayName("추천 게시판 성공")
+    void bestBoardSuccess() {
+        long boardId = 1l;
+
+        BestPostDto bestPostDto = BestPostDto.builder()
+            .id(boardId)
+            .title("title")
+            .imageUrl("imageUrl")
+            .build();
+
+        Mockito.when(postRepository.findBestPostByBoardId(boardId)).thenReturn(List.of(bestPostDto));
+
+        List<BestPostDto> bestPosts = postService.getBestPosts(boardId);
+
+        assertEquals(1, bestPosts.size());
+        assertEquals(bestPosts.get(0).getTitle(), bestPostDto.getTitle());
+        assertEquals(bestPosts.get(0).getImageUrl(), bestPostDto.getImageUrl());
+    }
+
 
 
 }

@@ -3,14 +3,17 @@ package com.myproject.community.api.board.service.impl;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.myproject.community.api.board.dto.BoardAdminDto;
+import com.myproject.community.api.board.dto.BoardBestDto;
 import com.myproject.community.api.board.dto.BoardDto;
 import com.myproject.community.api.board.dto.BoardWithCategoryDto;
 import com.myproject.community.api.board.repository.BoardRepository;
 import com.myproject.community.api.board.repository.CategoryBoardRepository;
 import com.myproject.community.api.category.repository.CategoryRepository;
 import com.myproject.community.domain.board.Board;
+import com.myproject.community.domain.category.Category;
 import com.myproject.community.domain.category.CategoryBoard;
 import com.myproject.community.error.CustomException;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -21,7 +24,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
@@ -115,6 +117,29 @@ class BoardServiceImplTest {
         Pageable pageable = Pageable.ofSize(10);
         Page<BoardAdminDto> boardsAdminPage = boardServiceImpl.getBoardsAdminPage(pageable);
         Mockito.verify(boardRepository, Mockito.times(1)).getBoardByAdminPage(pageable);
+    }
+
+    @Test
+    @DisplayName("추천 게시판")
+    void getBoardBests(){
+        BoardBestDto boardBestDto = Mockito.mock(BoardBestDto.class);
+        Mockito.when(boardRepository.getBoardBests()).thenReturn(List.of(boardBestDto));
+        List<BoardBestDto> boardsBest = boardServiceImpl.getBoardsBest();
+        Mockito.verify(boardRepository, Mockito.times(1)).getBoardBests();
+        assertEquals(boardBestDto, boardsBest.get(0));
+    }
+
+    @Test
+    @DisplayName("게시판 생성")
+    void createBoardSuccess(){
+        BoardWithCategoryDto boardWithCategoryDto = BoardWithCategoryDto.builder().title("test").description("test").active(true).categoryId(1L).build();
+        Category category = Category.builder().name("test").build();
+        Mockito.when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
+
+        boardServiceImpl.createBoard(boardWithCategoryDto);
+
+        Mockito.verify(boardRepository, Mockito.times(1)).save(Mockito.any(Board.class));
+        Mockito.verify(categoryBoardRepository, Mockito.times(1)).save(Mockito.any(CategoryBoard.class));
     }
 
 }
