@@ -1,6 +1,8 @@
 package com.myproject.community.api.post.service;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.myproject.community.api.account.AccountRepository;
 import com.myproject.community.api.auth.jwt.JwtProvider;
@@ -308,6 +310,34 @@ class PostServiceImplTest {
         assertEquals(1, bestPosts.size());
         assertEquals(bestPosts.get(0).getTitle(), bestPostDto.getTitle());
         assertEquals(bestPosts.get(0).getImageUrl(), bestPostDto.getImageUrl());
+    }
+
+    @Test
+    @DisplayName("게시물 상세")
+    void postDetailSuccess() {
+        long postId = 1l;
+        PostDetailDto postDetailDto = mock(PostDetailDto.class);
+
+        when(postRepository.findPostById(postId)).thenReturn(postDetailDto);
+
+        PostDetailDto postDetail = postService.getPostDetail(postId, request);
+
+        assertEquals(postDetailDto, postDetail);
+    }
+
+
+    @Test
+    @DisplayName("게시물 키워드 조회")
+    void postKeywordSearchSuccess() {
+        String keyword = "keyword";
+        Pageable pageable = mock(Pageable.class);
+        Page<PostListDto> postListDtoPage = mock(Page.class);
+
+        when(postRepository.findPostsByKeyword(keyword, pageable)).thenReturn(postListDtoPage);
+
+        Page<PostListDto> postsByKeyword = postService.getPostsByKeyword(keyword, pageable);
+
+        assertEquals(postListDtoPage, postsByKeyword);
     }
 
 
