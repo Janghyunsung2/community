@@ -1,5 +1,6 @@
 package com.myproject.community.api.chat;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,8 @@ public class ChatController {
     @MessageMapping("/chat.addUser/{room-id}")
     @SendTo("/topic/public/{room-id}")
     public ChatMessageDto addUser(@DestinationVariable("room-id") long roomId,
-        @Payload ChatMessageDto chatMessage, SimpMessageHeaderAccessor headerAccessor, HttpServletRequest request) {
+        @Payload ChatMessageDto chatMessage, SimpMessageHeaderAccessor headerAccessor, HttpServletRequest request)
+        throws JsonProcessingException {
         Map<String, Object> sessionAttributes = headerAccessor.getSessionAttributes();
         assert sessionAttributes != null;
         sessionAttributes.put("username", chatMessage.getSender());
