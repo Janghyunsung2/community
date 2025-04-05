@@ -1,5 +1,6 @@
 package com.myproject.community.api.chat_room;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +37,8 @@ public class ChatRoomController {
     }
 
     @PostMapping("{room-id}/join")
-    public ResponseEntity<String> joinChatRoom(@PathVariable(name = "room-id") long roomId, HttpServletRequest request) {
+    public ResponseEntity<String> joinChatRoom(@PathVariable(name = "room-id") long roomId, HttpServletRequest request)
+        throws JsonProcessingException {
         chatRoomService.joinChatRoom(roomId, request);
         return ResponseEntity.ok("Chat room joined");
     }

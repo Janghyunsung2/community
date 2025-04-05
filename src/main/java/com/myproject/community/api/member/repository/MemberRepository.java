@@ -26,4 +26,7 @@ public interface MemberRepository extends JpaRepository<Member, Long>, CustomMem
 
     @Query("select new com.myproject.community.api.member.dto.MemberResponseDto(m.name, a.username, m.email, m.nickName, m.phoneNumber) from Member m join Account a on a.id = m.id where m.id =:memberId")
     Optional<MemberResponseDto> findByMemberId(@Param("memberId") long memberId);
+
+    @Query("select m.id from Member m where m.nickName =:nickname")
+    long findMemberIdByNickname(String nickname);
 }

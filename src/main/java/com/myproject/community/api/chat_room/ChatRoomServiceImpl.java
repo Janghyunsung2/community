@@ -1,7 +1,11 @@
 package com.myproject.community.api.chat_room;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.myproject.community.api.auth.jwt.JwtProvider;
 import com.myproject.community.api.category.repository.CategoryRepository;
+import com.myproject.community.api.chat.ChatMessageDto;
+import com.myproject.community.api.chat.ChatMessageDto.MessageType;
 import com.myproject.community.api.chat_room.repository.CategoryChatRoomRepository;
 import com.myproject.community.api.chat_room.repository.ChatRoomMemberRepository;
 import com.myproject.community.api.chat_room.repository.ChatRoomRepository;
@@ -24,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class ChatRoomServiceImpl implements ChatRoomService {
+    private static final String CHAT_ROOM_PREFIX = "chat_room:";
 
     private final ChatRoomRepository chatRoomRepository;
     private final CategoryRepository categoryRepository;
@@ -31,6 +36,8 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     private final JwtProvider jwtProvider;
     private final MemberRepository memberRepository;
     private final ChatRoomMemberRepository chatRoomMemberRepository;
+    private final ObjectMapper objectMapper;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Transactional
     @Override
@@ -42,13 +49,6 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         ChatRoom chatRoom = ChatRoom.builder().title(chatRoomDto.getName())
             .capacity(chatRoomDto.getCapacity()).host(member).build();
         chatRoomRepository.save(chatRoom);
-
-        ChatRoomMember chatRoomMember = ChatRoomMember.builder()
-            .chatRoom(chatRoom)
-            .member(member)
-            .build();
-
-        chatRoomMemberRepository.save(chatRoomMember);
 
         long categoryId = chatRoomDto.getCategoryId();
         Category category = categoryRepository.findById(categoryId)
@@ -69,15 +69,41 @@ public class ChatRoomServiceImpl implements ChatRoomService {
             .build();
     }
 
+    @Transactional
     @Override
-    public void joinChatRoom(long roomId, HttpServletRequest request) {
+    public void joinChatRoom(long roomId, HttpServletRequest request)
+        throws JsonProcessingException {
+
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
             .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
         long memberId = jwtProvider.getAuthUserId(request);
         Member member = memberRepository.findById(memberId)
             .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        chatRoomMemberRepository.save(new ChatRoomMember(chatRoom, member));
+        boolean existed = chatRoomMemberRepository.existsChatRoomByChatRoomIdAndMemberId(
+            chatRoom.getId(), memberId);
+
+        int capacity = chatRoom.getCapacity();
+        long memberCount = chatRoomMemberRepository.countByChatRoomId(chatRoom.getId());
+        if(capacity <= memberCount) {
+            throw new CustomException(ErrorCode.CHAT_BAD_REQUEST);
+        }
+
+        if(!existed) {
+            ChatRoomMember chatRoomMember = new ChatRoomMember(chatRoom, member);
+            chatRoomMemberRepository.save(chatRoomMember);
+
+            ChatMessageDto chatMessage = ChatMessageDto.builder()
+                .type(MessageType.JOIN)
+                .roomId(roomId)
+                .sender("")
+                .content(member.getNickName() + "님이 입장하였습니다.")
+                .build();
+
+            String message = objectMapper.writeValueAsString(chatMessage);
+            redisTemplate.convertAndSend("/topic/public/" + roomId, message);
+            redisTemplate.opsForList().rightPush(CHAT_ROOM_PREFIX + roomId, message);
+        }
     }
 
     @Override

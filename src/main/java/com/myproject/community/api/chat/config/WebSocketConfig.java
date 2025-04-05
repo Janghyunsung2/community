@@ -1,5 +1,6 @@
 package com.myproject.community.api.chat.config;
 
+import com.myproject.community.api.chat.interceptor.ChatHandshakeInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -20,6 +21,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws-chat")
+            .addInterceptors(new ChatHandshakeInterceptor())
             .setAllowedOriginPatterns("*")
             .withSockJS();
     }

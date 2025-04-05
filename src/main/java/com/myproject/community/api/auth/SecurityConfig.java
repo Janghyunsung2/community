@@ -53,7 +53,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/admin").hasRole("ADMIN")
                 .requestMatchers("/ws-chat/**").permitAll()
                 .requestMatchers("/api/**").permitAll()
-                .requestMatchers("/h2-console/**").hasRole("ADMIN")
+                .requestMatchers("/h2-console/**").permitAll()
 
             )
             .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)) // ✅ iframe 허용

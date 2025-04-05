@@ -20,6 +20,10 @@ target/
 *.iml
 *.ipr
 
+# Java (Maven/Gradle)
+*.class
+bin/
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
@@ -27,6 +31,8 @@ target/
 /nbdist/
 /.nb-gradle/
 build/
+out/
+.DS_Store
 !**/src/main/**/build/
 !**/src/test/**/build/
 

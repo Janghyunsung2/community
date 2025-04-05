@@ -17,11 +17,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatServiceImpl implements ChatService {
@@ -38,20 +40,12 @@ public class ChatServiceImpl implements ChatService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatRoomMemberRepository chatRoomMemberRepository;
 
-    @Transactional(readOnly = true)
     @Override
     public void saveMessage(long roomId, ChatMessageDto chatMessageDto) throws CustomException {
-//        long memberId = jwtProvider.getAuthUserId(httpServletRequest);
-//        Member member = memberRepository.findById(memberId)
-//            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-//
-//        chatMessageDto.updateSender(member.getNickName());
         String key = CHAT_ROOM_PREFIX + roomId;
-
         try {
            String jsonMessage = objectMapper.writeValueAsString(chatMessageDto);
             redisTemplate.opsForList().rightPush(key, jsonMessage);
-
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -78,7 +72,8 @@ public class ChatServiceImpl implements ChatService {
 
     @Transactional
     @Override
-    public void addUserToRoom(HttpServletRequest request, long roomId, ChatMessageDto chatMessage, SimpMessageHeaderAccessor headerAccessor) {
+    public void addUserToRoom(HttpServletRequest request, long roomId, ChatMessageDto chatMessage, SimpMessageHeaderAccessor headerAccessor)
+        throws JsonProcessingException {
         Map<String, Object> sessionAttributes = headerAccessor.getSessionAttributes();
         assert sessionAttributes != null;
         sessionAttributes.put("username", chatMessage.getSender());
@@ -88,9 +83,31 @@ public class ChatServiceImpl implements ChatService {
             .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
             .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
+
         chatRoomMemberRepository.save(ChatRoomMember.builder().chatRoom(chatRoom).member(member).build());
 
     }
+
+    @Transactional
+    public void handleUserDisconnect(String username, long roomId) throws JsonProcessingException {
+        // DB 또는 메모리에서 해당 유저 상태를 퇴장으로 바꾸거나 제거
+        log.info("User Disconnected: {}", username);
+        long memberId = memberRepository.findMemberIdByNickname(username);
+
+        chatRoomMemberRepository.deleteByMemberId(memberId);
+
+        ChatMessageDto leaveMessage = ChatMessageDto.builder()
+            .type(ChatMessageDto.MessageType.LEAVE)
+            .sender(username)
+            .content(username + "님이 채팅방을 퇴장하였습니다.")
+            .roomId(roomId)
+            .build();
+
+        String message = objectMapper.writeValueAsString(leaveMessage);
+
+        redisTemplate.convertAndSend("/topic/public/" + roomId, message);
+    }
+
 
 
 }
